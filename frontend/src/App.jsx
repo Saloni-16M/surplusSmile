@@ -8,6 +8,7 @@ import Resort from "./components/Resort";
 import Ngo from "./components/Ngo";
 import NgoLogin from "./components/NgoLogin";
 import ResortLogin from "./components/ResortLogin";
+import NgoHome from "./components/NgoHome";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/ngo/register" element={<NgoRegistration />} />
           <Route path="/resort" element={<Resort />} />
           <Route path="/ngo" element={<Ngo />} />
+          <Route path="/ngoHome" element={<NgoHome />} />
           <Route path="/resort/login" element={<ResortLogin />} />
           <Route path="/ngo/login" element={<NgoLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />

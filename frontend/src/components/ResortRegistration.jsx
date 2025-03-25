@@ -7,6 +7,7 @@ const ResortRegistration = () => {
     name: "",
     email: "",
     location: "",
+    phone:"",
     isCertified: false,
   });
 
@@ -35,6 +36,7 @@ const ResortRegistration = () => {
         <input name="name" placeholder="Resort Name" onChange={handleChange} required />
         <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
         <input name="location" placeholder="Location" onChange={handleChange} required />
+        <input name="phone_no" placeholder="ContactNumber" onChange={handleChange} required />
 
         <label className="checkbox-label">
           <input type="checkbox" name="isCertified" checked={formData.isCertified} onChange={handleCheckboxChange} />

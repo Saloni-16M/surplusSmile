@@ -44,39 +44,48 @@ export const fetchResorts = async () => {
         return [];
     }
 };
-// Update NGO (for admin verification & comments)
-export const updateNgo = async (id, data) => {
+export const approveNgo = async (ngoId, data) => {
   try {
-      console.log("🔹 Sending update request:", id, data);
-
-      const response = await fetch(`http://localhost:5000/api/admin/ngos/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data), // ✅ Ensuring no missing fields
-      });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-          console.error("❌ Server responded with an error:", responseData);
-          throw new Error(responseData.message || "Failed to update NGO");
+    const response = await axios.put(
+      `${API_BASE_URL}/admin/ngos/${ngoId}/approve`,
+      data,  // Ensure correct payload
+      {
+        headers: { "Content-Type": "application/json" },
       }
-
-      return responseData;
-  } catch (err) {
-      console.error("❌ Error in updateNgo:", err);
-      throw err;
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error approving NGO:", error.response?.data || error.message);
+    throw error.response?.data || { message: "Failed to approve NGO" };
   }
 };
 
-
-
-// Update Resort (for admin verification & comments)
-export const updateResort = async (id, updateData) => {
+export const updateNgo = async (ngoId, adminComments) => {
+  return await axios.put(
+    `${API_BASE_URL}/admin/ngos/update/${ngoId}`,
+    { adminComments: adminComments.adminComments }, // ✅ This prevents nesting
+    { headers: { "Content-Type": "application/json" } }
+  );
+};
+export const approveResort = async (resortId, data) => {
   try {
-      const response = await axios.put(`${API_BASE_URL}/admin/resorts/${id}`, updateData);
-      return response.data;
+    const response = await axios.put(
+      `${API_BASE_URL}/admin/resorts/${resortId}/approve`,
+      data,  // Ensure correct payload
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    return response.data;
   } catch (error) {
-      throw error.response?.data || { message: "Failed to update Resort" };
+    console.error("Error approving Resort:", error.response?.data || error.message);
+    throw error.response?.data || { message: "Failed to approve Resort" };
   }
+};
+export const updateResort = async (resortId, adminComments) => {
+  return await axios.put(
+    `${API_BASE_URL}/admin/resorts/update/${resortId}`,
+    { adminComments: adminComments.adminComments }, // ✅ This prevents nesting
+    { headers: { "Content-Type": "application/json" } }
+  );
 };

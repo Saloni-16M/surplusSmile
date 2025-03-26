@@ -11,6 +11,8 @@ import ResortLogin from "./components/ResortLogin";
 import Guideline from "./components/Guideline";
 import ActiveRequests from "./components/ActiveRequests";
 import ResortCard from "./components/ResortCard";
+import NgoHome from "./components/NgoHome";
+
 function App() {
   return (
     <Router>
@@ -22,6 +24,7 @@ function App() {
           <Route path="/ngo/register" element={<NgoRegistration />} />
           <Route path="/resort" element={<Resort />} />
           <Route path="/ngo" element={<Ngo />} />
+          <Route path="/ngoHome" element={<NgoHome />} />
           <Route path="/resort/login" element={<ResortLogin />} />
           <Route path="/ngo/login" element={<NgoLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />

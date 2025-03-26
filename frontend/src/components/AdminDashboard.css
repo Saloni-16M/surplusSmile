@@ -1,39 +1,138 @@
 .admin-dashboard {
-    max-width: 800px;
-    margin: auto;
+    max-width: 900px;
+    margin: 20px auto;
     padding: 20px;
     font-family: Arial, sans-serif;
-    background: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease-in-out;
 }
 
+.admin-dashboard:hover {
+    transform: scale(1.02);
+}
+
+/* Heading */
 h2 {
     color: #333;
     text-align: center;
-    margin-bottom: 10px;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 5px;
+    margin-bottom: 15px;
+    border-bottom: 3px solid #007bff;
+    padding-bottom: 8px;
+    font-size: 22px;
+    font-weight: bold;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
-li {
-    background: white;
-    margin: 8px 0;
-    padding: 10px;
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #007bff;
+    color: #fff;
+    font-weight: bold;
+}
+
+td {
+    background: #f9f9f9;
+    color: #333;
+}
+
+/* Table Hover Effect */
+tbody tr:hover {
+    background: #f1f1f1;
+    transition: background 0.3s;
+}
+
+/* Buttons */
+button {
+    padding: 8px 14px;
+    border: none;
     border-radius: 5px;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
 }
 
+button:hover {
+    opacity: 0.85;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* Approve Button */
+button.approve {
+    background-color: #28a745;
+    color: white;
+}
+
+button.approve:hover {
+    background-color: #218838;
+}
+
+/* Save Button */
+button.save {
+    background-color: #007bff;
+    color: white;
+}
+
+button.save:hover {
+    background-color: #0056b3;
+}
+
+/* Input Fields */
+input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* No Data Message */
 p {
     text-align: center;
-    color: gray;
+    color: #666;
     font-style: italic;
+    margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-dashboard {
+        padding: 15px;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 10px;
+    }
+
+    button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    input[type="text"] {
+        font-size: 12px;
+    }
 }

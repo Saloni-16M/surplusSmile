@@ -1,26 +1,69 @@
 const Ngo = require("../models/Ngo");
-const bcrypt=require('bcrypt');
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const sendEmailToAdmin = require("../utils/notifyEmail");
+const Otp = require("../models/Otp"); // Make sure you import this
 
-// NGO Registration
 const registerNgo = async (req, res) => {
-  const { name, email, location, phone_no, isCertified } = req.body;
+  const { name, email, location, phone_no, isCertified, otp, password } = req.body;
 
   try {
     const existingNgo = await Ngo.findOne({ email });
-    if (existingNgo)
+    if (existingNgo) {
       return res.status(400).json({ message: "NGO already registered" });
+    }
 
-    const newNgo = new Ngo({ name, email, location, phone_no, isCertified });
+    // ✅ Check OTP
+    const validOtp = await Otp.findOne({ email, otp });
+    if (!validOtp) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // ✅ Clean up OTP
+    await Otp.deleteMany({ email });
+
+    // ✅ Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newNgo = new Ngo({
+      name,
+      email,
+      location,
+      phone_no,
+      isCertified,
+      password: hashedPassword,
+      adminApprovalStatus: "Pending"
+    });
+
     await newNgo.save();
 
-    res
-      .status(201)
-      .json({ message: "NGO registered, awaiting admin approval" });
+    // ✅ Notify Admin
+    const adminEmail = "saloni45055@gmail.com";
+    const subject = "New NGO Registration Pending Approval";
+    const message = `Dear Admin,
+
+A new NGO has registered and is awaiting approval. Please review the details:
+
+🔹 NGO Name: ${name}
+🔹 Email: ${email}
+🔹 Location: ${location}
+🔹 Phone Number: ${phone_no}
+🔹 Certified: ${isCertified ? "Yes" : "No"}
+
+Please log in to the admin panel to approve.
+
+Regards,
+System Notification Team`;
+
+    await sendEmailToAdmin(adminEmail, subject, message);
+
+    res.status(201).json({ message: "NGO registered, awaiting admin approval" });
   } catch (error) {
+    console.error("Register NGO error:", error);
     res.status(500).json({ message: "Server Error", error });
   }
 };
+
 
 /* NGO Login */
 const loginNgo = async (req, res) => {
@@ -57,4 +100,4 @@ const loginNgo = async (req, res) => {
   }
 };
 
-module.exports={loginNgo,registerNgo}
+module.exports = { loginNgo, registerNgo };

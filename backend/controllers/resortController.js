@@ -14,6 +14,27 @@ const registerResort = async (req, res) => {
     const newResort = new Resort({ name, email, location,phone_no, isCertified });
     await newResort.save();
 
+    // Send email notification to the admin
+    const adminEmail = "saloni45055@gmail.com"; // Replace with actual admin email
+    const subject = "New Resort Registration Pending Approval";
+    const message = `Dear Admin,
+
+      A new Resort has registered and is awaiting approval. Please review the details:
+
+      🔹 **NGO Name:** ${name}
+      🔹 **Email:** ${email}
+      🔹 **Location:** ${location}
+      🔹 **Phone Number:** ${phone_no}
+      🔹 **Certified:** ${isCertified ? "Yes" : "No"}
+
+      Please log in to the admin panel to approve.
+
+      Regards,
+      System Notification Team`;
+
+    await sendEmailToAdmin(adminEmail, subject, message);
+
+
     res.status(201).json({ message: "Resort registered, awaiting admin approval" });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });

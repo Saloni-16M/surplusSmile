@@ -68,7 +68,14 @@ const loginResort = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful", token,resort: {
+      _id: resort._id,
+      name: resort.name,
+      email: resort.email,
+      location: resort.location,
+      phone_no: resort.phone_no,
+      isCertified: resort.isCertified
+    } });
   } catch (error) {
     console.error("Error in loginNgo:", error);
     res.status(500).json({ message: "Server error" });

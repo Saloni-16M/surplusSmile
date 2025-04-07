@@ -24,7 +24,10 @@ const ResortLogin = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
 
+      // ✅ Save token and resortId
       localStorage.setItem("resortToken", data.token);
+      localStorage.setItem("resortId", data.resort._id); // <-- Store resortId for later use
+
       setMessage("Login successful! Redirecting...");
 
       setTimeout(() => {

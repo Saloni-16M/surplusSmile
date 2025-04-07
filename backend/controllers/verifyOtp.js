@@ -1,21 +1,32 @@
 const Otp = require("../models/Otp");
 
-const verifyOtp = async (req, res) => {
+const verifyEmailOtp = async (req, res) => {
   const { email, otp } = req.body;
 
   try {
-    const validOtp = await Otp.findOne({ email, otp });
+    const existingOtp = await Otp.findOne({ email, otp, type: "email" });
 
-    if (!validOtp) {
-      return res.status(400).json({ message: "OTP is invalid or expired" });
+    if (!existingOtp) {
+      return res.status(400).json({ message: "Invalid OTP" });
     }
 
-    // OTP valid - proceed with verification or registration
-    await Otp.deleteMany({ email }); // optional cleanup
-    res.status(200).json({ message: "OTP verified" });
+    const now = new Date();
+    const expiryTime = new Date(existingOtp.createdAt);
+    expiryTime.setMinutes(expiryTime.getMinutes() + 10); // 10 min expiry
 
+    if (now > expiryTime) {
+      return res.status(400).json({ message: "OTP expired" });
+    }
+
+    // ✅ Mark as verified
+    existingOtp.verified = true;
+    await existingOtp.save();
+
+    return res.status(200).json({ message: "Email OTP verified" });
   } catch (err) {
-    res.status(500).json({ message: "Server error", err });
+    console.error("Error verifying email OTP:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-module.exports={verifyOtp};
+
+module.exports = { verifyEmailOtp };

@@ -1,32 +1,34 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const NgoRegistration = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    address: "",
     phone_no: "",
     location: "",
     isCertified: false,
   });
 
+  const [message, setMessage] = useState("");
   const [otp, setOtp] = useState("");
+  const [phoneOtp, setPhoneOtp] = useState("");
+
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
 
-  const [message, setMessage] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
+  const [isPhoneOtpSent, setIsPhoneOtpSent] = useState(false);
+  const [isPhoneOtpVerified, setIsPhoneOtpVerified] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: type === "checkbox" ? checked : value,
-    });
+    }));
   };
 
-  const handleSendOtp = async () => {
+  const handleSendEmailOtp = async () => {
     if (!formData.email) {
       setMessage("Please enter your email first.");
       return;
@@ -49,7 +51,7 @@ const NgoRegistration = () => {
     }
   };
 
-  const verifyOtp = async () => {
+  const verifyEmailOtp = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/ngo/verify-otp", {
         method: "POST",
@@ -61,7 +63,48 @@ const NgoRegistration = () => {
       if (!response.ok) throw new Error(data.message);
 
       setIsOtpVerified(true);
-      setMessage("OTP verified successfully.");
+      setMessage("Email OTP verified successfully.");
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
+  const handleSendPhoneOtp = async () => {
+    if (!formData.phone_no) {
+      setMessage("Please enter your phone number first.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/ngo/send-phone-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone_no: formData.phone_no }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
+
+      setIsPhoneOtpSent(true);
+      setMessage("OTP sent to your phone.");
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
+  const verifyPhoneOtp = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/ngo/verify-phone-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone_no: formData.phone_no, otp: phoneOtp }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
+
+      setIsPhoneOtpVerified(true);
+      setMessage("Phone OTP verified successfully.");
     } catch (error) {
       setMessage(error.message);
     }
@@ -70,8 +113,8 @@ const NgoRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isOtpVerified) {
-      setMessage("Please verify your OTP before submitting.");
+    if (!isOtpVerified || !isPhoneOtpVerified) {
+      setMessage("Please verify both Email and Phone OTPs before submitting.");
       return;
     }
 
@@ -85,87 +128,87 @@ const NgoRegistration = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
 
-      setMessage("Registration successful! Awaiting admin approval.");
-      setShowModal(true);
+      setMessage("NGO registered successfully!");
+      setFormData({
+        name: "",
+        email: "",
+        address: "",
+        phone_no: "",
+        location: "",
+        isCertified: false,
+      });
+      setOtp("");
+      setPhoneOtp("");
+      setIsOtpSent(false);
+      setIsOtpVerified(false);
+      setIsPhoneOtpSent(false);
+      setIsPhoneOtpVerified(false);
     } catch (error) {
       setMessage(error.message);
     }
   };
 
-  const handleClose = () => {
-    setShowModal(false);
-    navigate("/");
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F0FAF4] p-6">
-      <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-4">NGO Registration</h2>
+    <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded-md shadow-md">
+      <h2 className="text-2xl font-bold mb-4 text-center">NGO Registration</h2>
 
-        {message && (
-          <p
-            className={`text-center text-sm mb-2 ${
-              message.toLowerCase().includes("success") ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            {message}
-          </p>
-        )}
+      {message && <p className="text-sm text-center text-red-600 mb-4">{message}</p>}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          name="name"
+          placeholder="NGO Name"
+          value={formData.name}
+          onChange={handleChange}
+          className="border p-2 rounded-md w-full"
+          required
+        />
+
+        <div className="flex space-x-2">
           <input
-            type="text"
-            name="name"
-            placeholder="NGO Name"
-            value={formData.name}
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
             onChange={handleChange}
             className="border p-2 rounded-md w-full"
             required
           />
+          <button
+            type="button"
+            onClick={handleSendEmailOtp}
+            className="bg-blue-500 text-white px-2 py-1 rounded"
+          >
+            Send Email OTP
+          </button>
+        </div>
 
-          <div className="flex space-x-2">
+        {isOtpSent && !isOtpVerified && (
+          <div className="space-y-2">
             <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
+              type="text"
+              placeholder="Enter Email OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
               className="border p-2 rounded-md w-full"
               required
             />
             <button
               type="button"
-              onClick={handleSendOtp}
-              className="bg-blue-500 text-white px-2 py-1 rounded"
+              onClick={verifyEmailOtp}
+              className="bg-blue-600 text-white px-4 py-1 rounded-md w-full"
             >
-              Send OTP
+              Verify Email OTP
             </button>
           </div>
+        )}
 
-          {isOtpSent && !isOtpVerified && (
-            <div className="space-y-2">
-              <input
-                type="text"
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="border p-2 rounded-md w-full"
-                required
-              />
-              <button
-                type="button"
-                onClick={verifyOtp}
-                className="bg-blue-600 text-white px-4 py-1 rounded-md w-full"
-              >
-                Verify OTP
-              </button>
-            </div>
-          )}
+        {isOtpVerified && (
+          <p className="text-green-600 text-sm text-center">✅ Email OTP Verified</p>
+        )}
 
-          {isOtpVerified && (
-            <p className="text-green-600 text-sm text-center">✅ OTP Verified</p>
-          )}
-
+        <div className="flex space-x-2">
           <input
             type="tel"
             name="phone_no"
@@ -175,60 +218,75 @@ const NgoRegistration = () => {
             className="border p-2 rounded-md w-full"
             required
           />
-          <input
-            type="text"
-            name="location"
-            placeholder="Location"
-            value={formData.location}
-            onChange={handleChange}
-            className="border p-2 rounded-md w-full"
-            required
-          />
-          <label className="flex items-center space-x-2 text-sm">
-            <input
-              type="checkbox"
-              name="isCertified"
-              checked={formData.isCertified}
-              onChange={handleChange}
-              className="w-4 h-4"
-            />
-            <span>Certified NGO</span>
-          </label>
-
           <button
-            type="submit"
-            className="bg-green-600 text-white px-4 py-2 rounded-md w-full font-semibold"
+            type="button"
+            onClick={handleSendPhoneOtp}
+            className="bg-blue-500 text-white px-2 py-1 rounded"
           >
-            Register
+            Send Phone OTP
           </button>
-        </form>
+        </div>
 
-        <p className="text-center mt-4 text-sm">
-          Already have an account?{" "}
-          <a href="/ngo/login" className="text-blue-600 font-semibold">
-            Login here
-          </a>
-        </p>
-      </div>
-
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-            <h4 className="text-green-600 font-semibold text-lg">
-              Registration Successful!
-            </h4>
-            <p className="text-gray-600 mt-2">
-              Awaiting admin approval. Check your email for credentials!
-            </p>
+        {isPhoneOtpSent && !isPhoneOtpVerified && (
+          <div className="space-y-2">
+            <input
+              type="text"
+              placeholder="Enter Phone OTP"
+              value={phoneOtp}
+              onChange={(e) => setPhoneOtp(e.target.value)}
+              className="border p-2 rounded-md w-full"
+              required
+            />
             <button
-              onClick={handleClose}
-              className="mt-4 bg-green-600 text-white px-4 py-2 rounded-md"
+              type="button"
+              onClick={verifyPhoneOtp}
+              className="bg-blue-600 text-white px-4 py-1 rounded-md w-full"
             >
-              OK
+              Verify Phone OTP
             </button>
           </div>
+        )}
+
+        {isPhoneOtpVerified && (
+          <p className="text-green-600 text-sm text-center">✅ Phone OTP Verified</p>
+        )}
+
+        <textarea
+          name="address"
+          placeholder="Address"
+          value={formData.address}
+          onChange={handleChange}
+          className="border p-2 rounded-md w-full"
+          required
+        />
+
+        <input
+          type="text"
+          name="location"
+          placeholder="Location"
+          value={formData.location}
+          onChange={handleChange}
+          className="border p-2 rounded-md w-full"
+          required
+        />
+
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            name="isCertified"
+            checked={formData.isCertified}
+            onChange={handleChange}
+          />
+          <label htmlFor="isCertified">Certified NGO</label>
         </div>
-      )}
+
+        <button
+          type="submit"
+          className="bg-green-600 text-white px-4 py-2 rounded-md w-full"
+        >
+          Register
+        </button>
+      </form>
     </div>
   );
 };

@@ -25,6 +25,9 @@ const NgoLogin = () => {
       if (!response.ok) throw new Error(data.message);
 
       localStorage.setItem("ngoToken", data.token);
+      localStorage.setItem("ngoId", data.ngo._id); // ✅ Correct
+
+
       setMessage("Login successful! Redirecting...");
       setTimeout(() => {
         window.location.href = "/ngo"; // Redirect to NGO dashboard

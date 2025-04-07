@@ -1,44 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaBell, FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ResortCard from "./ResortCard";
+import axios from "axios";
 
 const NGO = () => {
   const navigate = useNavigate();
+  const [resorts, setResorts] = useState([]); // Pending donations
+  const [acceptedDonations, setAcceptedDonations] = useState([]); // Accepted donations
+  const [loading, setLoading] = useState(true);
 
-  const resorts = [
-    {
-      name: "Resort 1",
-      food: "Rice & Curry",
-      quantity: "50 plates",
-      expiry: "2 hours",
-      location: "Downtown",
-      foodType: "Veg",
-    },
-    {
-      name: "Resort 2",
-      food: "Bread & Soup",
-      quantity: "30 plates",
-      expiry: "4 hours",
-      location: "Uptown",
-      foodType: "Non-Veg",
-    },
-    {
-      name: "Resort 3",
-      food: "Pasta",
-      quantity: "40 plates",
-      expiry: "3 hours",
-      location: "Midtown",
-      foodType: "Veg",
-    },
-  ];
-
-  const donationHistory = [
-    { id: 1, date: "2024-03-20", quantity: "50 plates", donor: "John Doe" },
-    { id: 2, date: "2024-03-18", quantity: "30 plates", donor: "Resort A" },
-    { id: 3, date: "2024-03-15", quantity: "40 plates", donor: "Jane Smith" },
-  ];
-
+  useEffect(() => {
+    const fetchDonations = async () => {
+      try {
+        const token = localStorage.getItem("ngoToken");
+  
+        // Fetch pending donations
+        const pendingRes = await axios.get("http://localhost:5000/api/ngo/donations/pending", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setResorts(pendingRes.data || []);
+  
+        // Fetch accepted donations
+        const acceptedRes = await axios.get("http://localhost:5000/api/ngo/donations/accepted", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAcceptedDonations(acceptedRes.data || []);
+      } catch (error) {
+        console.error("Error fetching donations:", error);
+        setResorts([]);
+        setAcceptedDonations([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchDonations();
+  }, []);
+  
   return (
     <div className="min-h-screen bg-[#F0FAF4] p-4">
       {/* Navbar Section */}
@@ -69,11 +68,26 @@ const NGO = () => {
 
       {/* Available Food Donations Section */}
       <h2 className="mt-6 text-2xl font-bold text-center">Available Food Donations</h2>
-      <div className="flex flex-wrap justify-center gap-6 mt-4">
-        {resorts.map((resort, index) => (
-          <ResortCard key={index} {...resort} />
-        ))}
-      </div>
+      {loading ? (
+        <p className="text-center mt-6 text-gray-600">Loading donations...</p>
+      ) : resorts.length === 0 ? (
+        <p className="text-center mt-6 text-gray-600">No pending donations found.</p>
+      ) : (
+        <div className="flex flex-wrap justify-center gap-6 mt-4">
+          {resorts.map((donation) => (
+            <ResortCard
+              key={donation._id}
+              name={donation.resortId?.name || "Unknown Resort"}
+              food={donation.foodName}
+              quantity={donation.quantity}
+              expiry={new Date(donation.foodMadeDate).toLocaleString()}
+              location={donation.pickupAddress}
+              foodType={donation.type}
+              donationId={donation._id}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Donation History Section */}
       <h2 className="mt-8 text-2xl font-bold text-center text-green-700 border-b-4 border-green-500 pb-2">
@@ -90,14 +104,29 @@ const NGO = () => {
             </tr>
           </thead>
           <tbody>
-            {donationHistory.map((donation, index) => (
-              <tr key={donation.id} className="bg-white">
-                <td className="border border-black px-4 py-2">{index + 1}</td>
-                <td className="border border-black px-4 py-2">{donation.date}</td>
-                <td className="border border-black px-4 py-2">{donation.quantity}</td>
-                <td className="border border-black px-4 py-2">{donation.donor}</td>
+            {acceptedDonations.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="border border-black px-4 py-4 text-gray-600">
+                  No accepted donations yet.
+                </td>
               </tr>
-            ))}
+            ) : (
+              acceptedDonations.map((donation, index) => (
+                <tr key={donation._id} className="bg-white">
+                  <td className="border border-black px-4 py-2">{index + 1}</td>
+                  <td className="border border-black px-4 py-2">
+                    {/* Show the accepted date if status is Accepted */}
+        {donation.status === "Accepted" && donation.acceptedDate
+          ? new Date(donation.acceptedDate).toLocaleDateString()
+          : "Not Accepted Yet"}
+                  </td>
+                  <td className="border border-black px-4 py-2">{donation.quantity}</td>
+                  <td className="border border-black px-4 py-2">
+                    {donation.resortId?.name || "Unknown"}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import { FaBell, FaSearch } from "react-icons/fa";
 import { useState } from "react";
+import ResortForm from "./ResortForm";
 
 const Resort = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -78,13 +79,7 @@ const Resort = () => {
       {/* Food Donation Form */}
       <div className="mt-6 p-4 bg-white shadow-md rounded-lg">
         <h3 className="text-lg font-semibold">Donate Food</h3>
-        <form className="flex flex-col gap-4 mt-4">
-          <input type="text" placeholder="Food Name" className="border p-2 rounded-md" />
-          <input type="number" placeholder="Quantity" className="border p-2 rounded-md" />
-          <input type="text" placeholder="Food Type" className="border p-2 rounded-md" />
-          <input type="datetime-local" className="border p-2 rounded-md" />
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-md">Submit</button>
-        </form>
+       <ResortForm/>
       </div>
     </div>
   );

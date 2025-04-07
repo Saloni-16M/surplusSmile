@@ -21,10 +21,12 @@ const sendOtpController = async (req, res) => {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const newOtp = new Otp({ email, otp });
+    
+    // ✅ Pass type
+    const newOtp = new Otp({ email, otp, type: "email" });
     await newOtp.save();
 
-    await sendOtpToEmail(email, otp); // ✅ Fixed function name
+    await sendOtpToEmail(email, otp);
     res.status(200).json({ message: "OTP sent to your email", otp });
   } catch (err) {
     console.error("Error sending OTP:", err);

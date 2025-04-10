@@ -5,13 +5,13 @@ const jwt = require("jsonwebtoken");
 
 // Resort Registration
 const registerResort = async (req, res) => {
-  const { name, email, location,phone_no, isCertified } = req.body;
+  const { name, email, location,phone_no, isCertified ,address} = req.body;
 
   try {
     const existingResort = await Resort.findOne({ email });
     if (existingResort) return res.status(400).json({ message: "Resort already registered" });
 
-    const newResort = new Resort({ name, email, location,phone_no, isCertified });
+    const newResort = new Resort({ name, email, location,phone_no, isCertified,address });
     await newResort.save();
 
     // Send email notification to the admin

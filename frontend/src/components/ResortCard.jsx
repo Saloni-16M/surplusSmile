@@ -6,9 +6,8 @@ const ResortCard = ({ donationId, name, food, quantity, expiry, location, foodTy
 
   const handleRequestPickup = async () => {
     try {
-      const token = localStorage.getItem("ngoToken"); // ✅ Correct key from login
- // NGO's token
-      const ngoId = localStorage.getItem("ngoId"); // if you're storing it
+      const token = localStorage.getItem("ngoToken");
+      const ngoId = localStorage.getItem("ngoId");
 
       const response = await axios.patch(
         `http://localhost:5000/api/ngo/donation/${donationId}/status`,
@@ -26,13 +25,34 @@ const ResortCard = ({ donationId, name, food, quantity, expiry, location, foodTy
 
       alert("Pickup requested! Resort has been notified.");
 
-      // Navigate after successful update
       navigate("/active-requests", {
         state: { name, food, quantity, expiry, location, foodType },
       });
     } catch (error) {
       console.error("Error requesting pickup:", error);
       alert("Something went wrong while requesting pickup.");
+    }
+  };
+
+  const handleConfirmPickup = async () => {
+    try {
+      const token = localStorage.getItem("ngoToken");
+
+      const response = await axios.put(
+        `http://localhost:5000/api/pickup/confirm-ngo/${donationId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("Pickup confirmed by NGO!");
+      // Optionally refresh parent or navigate somewhere
+    } catch (error) {
+      console.error("Error confirming pickup:", error);
+      alert("Failed to confirm pickup.");
     }
   };
 
@@ -56,6 +76,13 @@ const ResortCard = ({ donationId, name, food, quantity, expiry, location, foodTy
         className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-4"
       >
         Request Pickup
+      </button>
+
+      <button
+        onClick={handleConfirmPickup}
+        className="bg-green-600 text-white px-4 py-2 rounded-lg mt-2"
+      >
+        Confirm Pickup
       </button>
     </div>
   );

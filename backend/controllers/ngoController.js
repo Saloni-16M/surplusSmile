@@ -11,7 +11,7 @@ const FoodDonation = require("../models/FoodDonation");
 
 // ✅ Register NGO
 const registerNgo = async (req, res) => {
-  const { name, email, location, phone_no, isCertified } = req.body;
+  const { name, email, location, phone_no, isCertified,address } = req.body;
 
   try {
     const existingNgo = await Ngo.findOne({ email });
@@ -40,7 +40,7 @@ const registerNgo = async (req, res) => {
       email,
       location,
       phone_no,
-      isCertified,
+      isCertified,address,
       adminApprovalStatus: "Pending"
     });
 

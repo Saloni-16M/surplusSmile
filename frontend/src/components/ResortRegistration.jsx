@@ -8,6 +8,7 @@ const ResortRegistration = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    address:"",
     phone_no: "",
     location: "",
     isCertified: false,
@@ -97,6 +98,14 @@ const ResortRegistration = () => {
             className="border p-2 rounded-md w-full"
             required
           />
+           <textarea
+          name="address"
+          placeholder="Address"
+          value={formData.address}
+          onChange={handleChange}
+          className="border p-2 rounded-md w-full"
+          required
+        />
           <input
             type="text"
             name="location"

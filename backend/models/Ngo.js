@@ -4,6 +4,11 @@ const ngoSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   location: { type: String, required: true },
+  // location: {
+  //   type: { type: String, enum: ['Point'], default: 'Point' },
+  //   coordinates: { type: [Number], required: true }, // [longitude, latitude]
+  // },
+  address: { type: String, required: true },
   phone_no: { type: String, required: true, unique: true },
   isCertified: { type: Boolean, required: true },
   isVerified: { type: Boolean, default: false }, // Admin verification status
@@ -11,6 +16,7 @@ const ngoSchema = new mongoose.Schema({
   adminComments: { type: String, default: "" }, // Admin comments
   loginId: { type: String },
   password: { type: String },
+  fcmToken: String
 });
 
 module.exports = mongoose.model("Ngo", ngoSchema);

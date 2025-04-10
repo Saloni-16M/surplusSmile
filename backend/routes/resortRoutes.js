@@ -9,6 +9,7 @@ const {
   getAllFoodDonationsByResort,
   getSingleDonation,
   updateDonationStatus,
+  getResortDonationTracking
 } = require("../controllers/foodDonationController"); // You'll need to create this controller
 
 const router = express.Router();
@@ -22,5 +23,5 @@ router.post("/donate", createFoodDonation); // Resort donates food
 router.get("/donations/:resortId", getAllFoodDonationsByResort); // Get all donations by one resort
 router.get("/donation/:donationId", getSingleDonation); // View single donation
 router.patch("/donation/:donationId/status", updateDonationStatus); // Admin/NGO updates donation status (Pending/Accepted/Rejected)
-
+router.get("/donations/:resortId/track",getResortDonationTracking );
 module.exports = router;

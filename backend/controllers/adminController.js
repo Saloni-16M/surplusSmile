@@ -4,6 +4,44 @@ const Resort = require("../models/Resort");
 const sendApprovalEmail = require("../utils/emailService");
 const sendApprovalEmailResort=require('../config/emailService');//for resort
 
+
+
+const Admin = require("../models/Admin");
+
+const loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
+    }
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign(
+      { id: admin._id, email: admin.email, role: "admin" },
+      process.env.JWT_SECRET,
+      { expiresIn: "2h" }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token,
+      admin: { id: admin._id, email: admin.email }
+    });
+
+  } catch (error) {
+    console.error("Error in loginAdmin:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
 /**
  * Controller to get all registered NGOs
  */
@@ -189,4 +227,5 @@ module.exports = {
   approveResort,
   updateNgo,
   updateResort,
+  loginAdmin,
 };

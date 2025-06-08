@@ -9,52 +9,45 @@ const NGO = () => {
   const [resorts, setResorts] = useState([]); // Pending donations
   const [acceptedDonations, setAcceptedDonations] = useState([]); // Accepted donations
   const [loading, setLoading] = useState(true);
-
+  const ngoName = localStorage.getItem("ngoName");
   useEffect(() => {
-    const fetchDonations = async () => {
-      try {
-        const token = localStorage.getItem("ngoToken");
+    const token = localStorage.getItem("ngoToken");
 
-        // Fetch pending donations
+    const fetchPendingDonations = async () => {
+      try {
         const pendingRes = await axios.get("http://localhost:5000/api/ngo/donations/pending");
-
-
         setResorts(pendingRes.data);
-
-        // // Fetch accepted donations
-        // const acceptedRes = await axios.get("http://localhost:5000/api/ngo/donations/accepted", {
-        //   headers: { Authorization: Bearer ${token} },
-        // });
-        // setAcceptedDonations(acceptedRes.data || []);
       } catch (error) {
-        console.error("Error fetching donations:", error.response?.data || error.message); setResorts([]);
-        setAcceptedDonations([]);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching pending donations:", error.response?.data || error.message);
+        setResorts([]);
       }
-    }; const accpetDonations = async () => {
-      try {
-        const token = localStorage.getItem("ngoToken");
+    };
 
+    const fetchAcceptedDonations = async () => {
+      try {
         const acceptedRes = await axios.get("http://localhost:5000/api/ngo/donations/accepted", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAcceptedDonations(acceptedRes.data || []);
-
       } catch (error) {
-        console.error("Error fetching donations:", error.response?.data || error.message); setResorts([]);
+        console.error("Error fetching accepted donations:", error.response?.data || error.message);
         setAcceptedDonations([]);
-      } finally {
-        setLoading(false);
       }
     };
-    accpetDonations();
-    fetchDonations();
+
+    const fetchData = async () => {
+      setLoading(true);
+      await Promise.all([fetchPendingDonations(), fetchAcceptedDonations()]);
+      setLoading(false);
+    };
+
+    fetchData();
   }, [navigate]);
+
   const handleConfirmPickup = async (donationId) => {
     try {
       const token = localStorage.getItem("ngoToken");
-  
+
       // Step 1: Confirm pickup by NGO
       await axios.put(
         `http://localhost:5000/api/pickup/confirm-by-ngo/${donationId}`,
@@ -65,14 +58,14 @@ const NGO = () => {
           },
         }
       );
-  
+
       // Step 2: Re-fetch updated accepted donations
       const updatedAccepted = await axios.get("http://localhost:5000/api/ngo/donations/accepted", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAcceptedDonations(updatedAccepted.data || []);
-  
-      // Step 3: Check if resort also confirmed
+
+      // Step 3: Check if resort also confirmed, then mark as picked
       const donation = updatedAccepted.data.find((d) => d._id === donationId);
       if (donation?.pickupConfirmedByResort && donation?.pickupConfirmedByNGO) {
         await axios.put(
@@ -89,15 +82,13 @@ const NGO = () => {
       console.error("Pickup confirmation failed:", error.response?.data || error.message);
     }
   };
-  
-
 
   return (
     <div className="min-h-screen bg-[#F0FAF4] p-4">
       {/* Navbar Section */}
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-bold">
-          Welcome <span className="text-purple-800">[NGO Name]!</span>
+          Welcome <span className="text-purple-800">{ngoName}!</span>
           <p className="text-gray-700">Nourishing lives, reducing waste</p>
         </h1>
         <div className="flex items-center gap-4">
@@ -150,68 +141,20 @@ const NGO = () => {
       </h2>
       <div className="mt-4 overflow-x-auto">
         <table className="w-full border-collapse border border-black text-center">
-        <thead className="bg-gray-300">
-  <tr>
-    <th className="border border-black px-4 py-2">S.No.</th>
-    <th className="border border-black px-4 py-2">Accepted Date</th>
-    <th className="border border-black px-4 py-2">Quantity (in Kgs)</th>
-    <th className="border border-black px-4 py-2">Donor</th>
-    <th className="border border-black px-4 py-2">Pickup Status</th>
-    <th className="border border-black px-4 py-2">Actions</th>
-  </tr>
-</thead>
-<tbody>
-  {acceptedDonations.length === 0 ? (
-    <tr>
-      <td colSpan="6" className="border border-black px-4 py-4 text-gray-600">
-        No accepted donations yet.
-      </td>
-    </tr>
-  ) : (
-    acceptedDonations.map((donation, index) => (
-      <tr key={donation._id} className="bg-white">
-        <td className="border border-black px-4 py-2">{index + 1}</td>
-        <td className="border border-black px-4 py-2">
-          {donation.status === "Accepted" && donation.acceptedDate
-            ? new Date(donation.acceptedDate).toLocaleDateString()
-            : "Not Accepted Yet"}
-        </td>
-        <td className="border border-black px-4 py-2">{donation.quantity}</td>
-        <td className="border border-black px-4 py-2">
-          {donation.resortId?.name || "Unknown"}
-        </td>
-        <td className="border border-black px-4 py-2">
-          {donation.pickupStatus === "Picked" ? (
-            <span className="text-green-700 font-semibold">Picked on {new Date(donation.pickupDate).toLocaleDateString()}</span>
-          ) : (
-            <span className="text-yellow-600 font-semibold">
-              Waiting for {donation.pickupConfirmedByNGO ? "" : "NGO "}
-              {donation.pickupConfirmedByNGO && !donation.pickupConfirmedByResort ? "Resort" : ""}
-            </span>
-          )}
-        </td>
-        <td className="border border-black px-4 py-2">
-          {!donation.pickupConfirmedByNGO && (
-            <button
-              onClick={() => handleConfirmPickup(donation._id)}
-              className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-            >
-              Confirm Pickup
-            </button>
-          )}
-          {donation.pickupStatus === "Picked" && (
-            <span className="text-sm text-gray-500">Completed</span>
-          )}
-        </td>
-      </tr>
-    ))
-  )}
-</tbody>
-
+          <thead className="bg-gray-300">
+            <tr>
+              <th className="border border-black px-4 py-2">S.No.</th>
+              <th className="border border-black px-4 py-2">Accepted Date</th>
+              <th className="border border-black px-4 py-2">Quantity (in Kgs)</th>
+              <th className="border border-black px-4 py-2">Donor</th>
+              <th className="border border-black px-4 py-2">Pickup Status</th>
+              <th className="border border-black px-4 py-2">Actions</th>
+            </tr>
+          </thead>
           <tbody>
             {acceptedDonations.length === 0 ? (
               <tr>
-                <td colSpan="4" className="border border-black px-4 py-4 text-gray-600">
+                <td colSpan="6" className="border border-black px-4 py-4 text-gray-600">
                   No accepted donations yet.
                 </td>
               </tr>
@@ -220,14 +163,38 @@ const NGO = () => {
                 <tr key={donation._id} className="bg-white">
                   <td className="border border-black px-4 py-2">{index + 1}</td>
                   <td className="border border-black px-4 py-2">
-                    {/* Show the accepted date if status is Accepted */}
-                    {donation.status === "Accepted" && donation.acceptedDate
+                    {donation.acceptedDate
                       ? new Date(donation.acceptedDate).toLocaleDateString()
                       : "Not Accepted Yet"}
                   </td>
                   <td className="border border-black px-4 py-2">{donation.quantity}</td>
                   <td className="border border-black px-4 py-2">
                     {donation.resortId?.name || "Unknown"}
+                  </td>
+                  <td className="border border-black px-4 py-2">
+                    {donation.pickupStatus === "Picked" ? (
+                      <span className="text-green-700 font-semibold">
+                        Picked on {new Date(donation.pickupDate).toLocaleDateString()}
+                      </span>
+                    ) : (
+                      <span className="text-yellow-600 font-semibold">
+                        Waiting for {donation.pickupConfirmedByNGO ? "" : "NGO "}
+                        {donation.pickupConfirmedByNGO && !donation.pickupConfirmedByResort ? "Resort" : ""}
+                      </span>
+                    )}
+                  </td>
+                  <td className="border border-black px-4 py-2">
+                    {!donation.pickupConfirmedByNGO && (
+                      <button
+                        onClick={() => handleConfirmPickup(donation._id)}
+                        className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                      >
+                        Confirm Pickup
+                      </button>
+                    )}
+                    {donation.pickupStatus === "Picked" && (
+                      <span className="text-sm text-gray-500">Completed</span>
+                    )}
                   </td>
                 </tr>
               ))

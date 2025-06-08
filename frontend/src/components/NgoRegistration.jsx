@@ -12,13 +12,9 @@ const NgoRegistration = () => {
 
   const [message, setMessage] = useState("");
   const [otp, setOtp] = useState("");
-  const [phoneOtp, setPhoneOtp] = useState("");
 
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
-
-  const [isPhoneOtpSent, setIsPhoneOtpSent] = useState(false);
-  const [isPhoneOtpVerified, setIsPhoneOtpVerified] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -69,52 +65,11 @@ const NgoRegistration = () => {
     }
   };
 
-  const handleSendPhoneOtp = async () => {
-    if (!formData.phone_no) {
-      setMessage("Please enter your phone number first.");
-      return;
-    }
-
-    try {
-      const response = await fetch("http://localhost:5000/api/ngo/send-phone-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone_no: formData.phone_no }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-
-      setIsPhoneOtpSent(true);
-      setMessage("OTP sent to your phone.");
-    } catch (error) {
-      setMessage(error.message);
-    }
-  };
-
-  const verifyPhoneOtp = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/ngo/verify-phone-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone_no: formData.phone_no, otp: phoneOtp }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-
-      setIsPhoneOtpVerified(true);
-      setMessage("Phone OTP verified successfully.");
-    } catch (error) {
-      setMessage(error.message);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isOtpVerified || !isPhoneOtpVerified) {
-      setMessage("Please verify both Email and Phone OTPs before submitting.");
+    if (!isOtpVerified) {
+      setMessage("Please verify your Email OTP before submitting.");
       return;
     }
 
@@ -138,11 +93,8 @@ const NgoRegistration = () => {
         isCertified: false,
       });
       setOtp("");
-      setPhoneOtp("");
       setIsOtpSent(false);
       setIsOtpVerified(false);
-      setIsPhoneOtpSent(false);
-      setIsPhoneOtpVerified(false);
     } catch (error) {
       setMessage(error.message);
     }
@@ -208,48 +160,15 @@ const NgoRegistration = () => {
           <p className="text-green-600 text-sm text-center">✅ Email OTP Verified</p>
         )}
 
-        <div className="flex space-x-2">
-          <input
-            type="tel"
-            name="phone_no"
-            placeholder="Phone Number"
-            value={formData.phone_no}
-            onChange={handleChange}
-            className="border p-2 rounded-md w-full"
-            required
-          />
-          <button
-            type="button"
-            onClick={handleSendPhoneOtp}
-            className="bg-blue-500 text-white px-2 py-1 rounded"
-          >
-            Send Phone OTP
-          </button>
-        </div>
-
-        {isPhoneOtpSent && !isPhoneOtpVerified && (
-          <div className="space-y-2">
-            <input
-              type="text"
-              placeholder="Enter Phone OTP"
-              value={phoneOtp}
-              onChange={(e) => setPhoneOtp(e.target.value)}
-              className="border p-2 rounded-md w-full"
-              required
-            />
-            <button
-              type="button"
-              onClick={verifyPhoneOtp}
-              className="bg-blue-600 text-white px-4 py-1 rounded-md w-full"
-            >
-              Verify Phone OTP
-            </button>
-          </div>
-        )}
-
-        {isPhoneOtpVerified && (
-          <p className="text-green-600 text-sm text-center">✅ Phone OTP Verified</p>
-        )}
+        <input
+          type="tel"
+          name="phone_no"
+          placeholder="Phone Number"
+          value={formData.phone_no}
+          onChange={handleChange}
+          className="border p-2 rounded-md w-full"
+          required
+        />
 
         <textarea
           name="address"
@@ -292,10 +211,3 @@ const NgoRegistration = () => {
 };
 
 export default NgoRegistration;
-
-
-
-
-
-// testing 
-

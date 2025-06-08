@@ -16,7 +16,7 @@ const foodDonationSchema = new mongoose.Schema({
   foodMadeDate: { type: Date, required: true },
   pickupAddress: { type: String, required: true },
 
-  imageUrl: { type: String, required: true },
+  imageUrl: { type: String, required: false },
   status: {
     type: String,
     enum: ["Pending", "Accepted", "Rejected"],

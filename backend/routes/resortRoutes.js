@@ -24,8 +24,4 @@ router.get("/donations/:resortId", getAllFoodDonationsByResort); // Get all dona
 router.get("/donation/:donationId", getSingleDonation); // View single donation
 router.patch("/donation/:donationId/status", updateDonationStatus); // Admin/NGO updates donation status (Pending/Accepted/Rejected)
 router.get("/donations/:resortId/track",getResortDonationTracking );
-<<<<<<< HEAD
 module.exports = router;
-=======
-module.exports = router;
->>>>>>> 11eb3ff

@@ -26,7 +26,7 @@ const NgoLogin = () => {
 
       localStorage.setItem("ngoToken", data.token);
       localStorage.setItem("ngoId", data.ngo._id); // ✅ Correct
-
+      localStorage.setItem("ngoName", data.ngo.name);
 
       setMessage("Login successful! Redirecting...");
       setTimeout(() => {
@@ -44,9 +44,8 @@ const NgoLogin = () => {
 
         {message && (
           <p
-            className={`text-center text-sm ${
-              message.includes("successful") ? "text-green-500" : "text-red-500"
-            }`}
+            className={`text-center text-sm ${message.includes("successful") ? "text-green-500" : "text-red-500"
+              }`}
           >
             {message}
           </p>

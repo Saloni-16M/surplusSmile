@@ -26,7 +26,9 @@ const ResortLogin = () => {
 
       // ✅ Save token and resortId
       localStorage.setItem("resortToken", data.token);
-      localStorage.setItem("resortId", data.resort._id); // <-- Store resortId for later use
+      localStorage.setItem("resortId", data.resort._id);
+       // <-- Store resortId for later use
+          localStorage.setItem('resortName', data.resort.name);
 
       setMessage("Login successful! Redirecting...");
 

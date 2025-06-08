@@ -9,9 +9,9 @@ const { getSessionId, sendSmsOtp } = require("../utils/sendSmsOtp");
 const { verifySmsOtp } = require("../utils/verifySmsOtp");
 const FoodDonation = require("../models/FoodDonation");
 
-// ✅ Register NGO
+// Register NGO
 const registerNgo = async (req, res) => {
-  const { name, email, location, phone_no, isCertified } = req.body;
+  const { name, email, location, phone_no, isCertified,address } = req.body;
 
   try {
     const existingNgo = await Ngo.findOne({ email });
@@ -19,34 +19,34 @@ const registerNgo = async (req, res) => {
       return res.status(400).json({ message: "NGO already registered" });
     }
 
-    // ✅ 1. Check Email is verified
+    //  1. Check Email is verified
     const validEmailOtp = await Otp.findOne({ email, verified: true, type: "email" });
     if (!validEmailOtp) {
       return res.status(400).json({ message: "Email not verified" });
     }
 
-    // ✅ 2. Check Phone is verified
-    const validPhoneOtp = await Otp.findOne({ phone_no, verified: true, type: "phone" });
-    if (!validPhoneOtp) {
-      return res.status(400).json({ message: "Phone number not verified" });
-    }
+    //  2. Check Phone is verified
+    // const validPhoneOtp = await Otp.findOne({ phone_no, verified: true, type: "phone" });
+    // if (!validPhoneOtp) {
+    //   return res.status(400).json({ message: "Phone number not verified" });
+    // }
 
-    // ✅ 3. Clean up verified OTPs
-    await Otp.deleteMany({ $or: [{ email }, { phone_no }] });
+    //  3. Clean up verified OTPs
+    // await Otp.deleteMany({ $or: [{ email }, { phone_no }] });
 
-    // ✅ 4. Create NGO (No password)
+    // 4. Create NGO (No password)
     const newNgo = new Ngo({
       name,
       email,
       location,
       phone_no,
-      isCertified,
+      isCertified,address,
       adminApprovalStatus: "Pending"
     });
 
     await newNgo.save();
 
-    // ✅ 5. Notify admin
+    //  5. Notify admin
     const adminEmail = "saloni45055@gmail.com";
     const subject = "New NGO Registration Pending Approval";
     const message = `Dear Admin,
@@ -73,7 +73,7 @@ System Notification Team`;
   }
 };
 
-// ✅ Login NGO
+//  Login NGO
 const loginNgo = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -112,7 +112,7 @@ const loginNgo = async (req, res) => {
   }
 };
 
-// ✅ Send Phone OTP
+// Send Phone OTP
 const sendPhoneOtp = async (req, res) => {
   const { phone_no } = req.body;
 
@@ -125,7 +125,7 @@ const sendPhoneOtp = async (req, res) => {
   }
 };
 
-// ✅ Verify Phone OTP
+//  Verify Phone OTP
 const verifyPhoneOtp = async (req, res) => {
   const { phone_no, otp } = req.body;
 
@@ -140,7 +140,7 @@ const verifyPhoneOtp = async (req, res) => {
       return res.status(400).json({ message: "Incorrect or expired OTP" });
     }
 
-    // ✅ Mark phone as verified
+    // Mark phone as verified
     await Otp.updateOne(
       { phone_no, type: "phone" },
       { verified: true },
@@ -154,8 +154,8 @@ const verifyPhoneOtp = async (req, res) => {
   }
 };
 
-// ✅ Get accepted donations for a particular NGO
- // Adjust path as needed
+//  Get accepted donations for a particular NGO
+
 
 const getAcceptedDonationsByNgo = async (req, res) => {
   try {
@@ -182,7 +182,7 @@ const getAcceptedDonationsByNgo = async (req, res) => {
 
     return res.status(200).json(acceptedDonations);
   } catch (error) {
-    console.error("❌ Error fetching accepted donations:", error);
+    console.error(" Error fetching accepted donations:", error);
     return res.status(500).json({ message: "Server error", error });
   }
 };

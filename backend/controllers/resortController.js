@@ -1,5 +1,6 @@
 const Resort = require("../models/Resort");
 const bcrypt = require("bcryptjs");
+const sendEmailToAdmin=require('../utils/notifyEmail');
 
 const jwt = require("jsonwebtoken");
 
@@ -15,7 +16,7 @@ const registerResort = async (req, res) => {
     await newResort.save();
 
     // Send email notification to the admin
-    const adminEmail = "saloni45055@gmail.com"; // Replace with actual admin email
+    const adminEmail = "saloni45055@gmail.com";
     const subject = "New Resort Registration Pending Approval";
     const message = `Dear Admin,
 

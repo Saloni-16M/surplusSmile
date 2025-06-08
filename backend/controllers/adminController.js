@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const Ngo = require("../models/Ngo");
 const Resort = require("../models/Resort");
-const sendApprovalEmail = require("../utils/emailService");
+const sendApprovalEmail = require("../utils/ngoApprovalMail");
 const sendApprovalEmailResort=require('../config/emailService');//for resort
 
 

@@ -4,34 +4,32 @@ const {
   loginNgo,
   sendPhoneOtp,
   verifyPhoneOtp,
-  getAcceptedDonationsByNgo
+  getAcceptedDonationsByNgo,
 } = require("../controllers/ngoController");
 const authenticateJWT = require("../middlewares/authMiddleware");
 const {
   getAllPendingDonationsForNGO,
   updateDonationStatus,
 } = require("../controllers/foodDonationController");
-// const { schedulePickup } = require("../controllers/foodDonationController");
 
-
-
-const { sendOtpController } = require("../controllers/sendOtpController"); // ✅ Add this line!
-const { verifyEmailOtp } = require("../controllers/verifyOtp");
+const { sendOtpController } = require("../controllers/sendOtpController"); 
+const { verifyEmailOtp } = require("../utils/verifyOtp");
 const router = express.Router();
 
 router.post("/register", registerNgo);
 router.post("/login", loginNgo);
-router.post("/send-otp", sendOtpController); // ✅ Add this
+router.post("/send-otp", sendOtpController);
 
 // Route to verify OTP
 router.post("/verify-otp", verifyEmailOtp);
 router.post("/send-phone-otp", sendPhoneOtp);
 router.post("/verify-phone-otp", verifyPhoneOtp);
 
-// 🍱 NGO Access to Donations
+// NGO Access to Donations
 router.get("/donations/pending", getAllPendingDonationsForNGO); // Get pending donations
 router.patch("/donation/:donationId/status", updateDonationStatus); // NGO accepts/rejects
 
+<<<<<<< HEAD
 // PUT route to schedule pickup
 // router.put("/donation/:donationId/schedule-pickup", schedulePickup);
 
@@ -49,4 +47,7 @@ router.post("/fcm-token", async (req, res) => {
 
 
 router.get("/donations/accepted",authenticateJWT, getAcceptedDonationsByNgo);
+=======
+router.get("/donations/accepted", authenticateJWT, getAcceptedDonationsByNgo);
+>>>>>>> 11eb3ff
 module.exports = router;

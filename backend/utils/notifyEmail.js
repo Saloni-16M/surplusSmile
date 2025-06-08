@@ -5,8 +5,8 @@ const sendEmailToAdmin = async (to, subject, message) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "surplussmile@gmail.com", // Replace with your email
-        pass: "tvna crtu chwk srfx", // Use an app password for security
+        user: "surplussmile@gmail.com", 
+        pass: "tvna crtu chwk srfx", 
       },
     });
 

@@ -1,31 +1,27 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const ngoSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  email: { type: String, unique: true, required: true },
-  location: { type: String, required: true },
-
+  email: { type: String, required: true, unique: true },
+  phone_no: { type: String, required: true },
+  isCertified: { type: Boolean, default: false },
   address: { type: String, required: true },
-  phone_no: {
-    type: String,
-    required: true,
-    unique: true,
-
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true,
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      required: true,
+    },
   },
-
-  isCertified: { type: Boolean, required: true },
-  isVerified: { type: Boolean, default: false }, // Admin verification status
-  adminApprovalStatus: {
-    type: String,
-    enum: ["Pending", "Approved", "Rejected"],
-    default: "Pending",
-  }, 
-  // Admin approval status
-  adminComments: { type: String, default: "" }, // Admin comments
-  loginId: { type: String },
-  password: { type: String },
-
-
+    emailVerified: { type: Boolean, default: false },
+}, {
+  timestamps: true,
 });
 
-module.exports = mongoose.model("Ngo", ngoSchema);
+ngoSchema.index({ location: "2dsphere" }); // For geospatial queries
+
+module.exports = mongoose.model('NGO', ngoSchema);

@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const pickupRoutes = require("./routes/foodPickupRoutes");
+const reverseGeocodeRoute = require('./routes/reverseGeocode');
 
 const YAML = require("yamljs");
 const swaggerUi = require("swagger-ui-express");
@@ -23,5 +24,7 @@ app.use("/api/pickup", pickupRoutes);
 app.use("/api/ngo", require("./routes/ngoRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/resort", require("./routes/resortRoutes"));
+app.use('/api/location', reverseGeocodeRoute);
+app.use("/api/geocode", require("./routes/geocodeRoutes"));
 
 app.listen(5000, () => console.log("Server running on port 5000"));

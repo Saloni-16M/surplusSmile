@@ -11,74 +11,50 @@ const FoodDonation = require("../models/FoodDonation");
 
 // ✅ Register NGO
 const registerNgo = async (req, res) => {
-  const { name, email, location, phone_no, isCertified, address } = req.body;
-
   try {
+    const { name, email, phone_no, isCertified, address, location } = req.body;
+
+    // Validation
+    if (!name || !email || !phone_no || !address || !location?.coordinates?.length) {
+      return res.status(400).json({ message: 'All required fields must be filled.' });
+    }
+
+    // 🔒 Check if email is verified via OTP
+    const otpRecord = await Otp.findOne({ email, type: "email", verified: true });
+
+    if (!otpRecord) {
+      return res.status(403).json({ message: 'Please verify your email before registering.' });
+    }
+
+    // Check for duplicate email
     const existingNgo = await Ngo.findOne({ email });
     if (existingNgo) {
-      return res.status(400).json({ message: "NGO already registered" });
+      return res.status(409).json({ message: 'NGO already registered with this email.' });
     }
 
-    // ✅ 1. Check Email is verified
-    const validEmailOtp = await Otp.findOne({
-      email,
-      verified: true,
-      type: "email",
-    });
-    if (!validEmailOtp) {
-      return res.status(400).json({ message: "Email not verified" });
-    }
-
-    // ✅ 2. Check Phone is verified
-    // const validPhoneOtp = await Otp.findOne({ phone_no, verified: true, type: "phone" });
-    // if (!validPhoneOtp) {
-    //   return res.status(400).json({ message: "Phone number not verified" });
-    // }
-
-    // ✅ 3. Clean up verified OTPs
-    await Otp.deleteMany({ $or: [{ email }, { phone_no }] });
-
-    // ✅ 4. Create NGO (No password)
     const newNgo = new Ngo({
       name,
       email,
-      location,
       phone_no,
       isCertified,
       address,
-      adminApprovalStatus: "Pending",
+      location,
+       emailVerified: true,
     });
 
     await newNgo.save();
 
-    // ✅ 5. Notify admin
-    const adminEmail = "saloni45055@gmail.com";
-    const subject = "New NGO Registration Pending Approval";
-    const message = `Dear Admin,
+    // ✅ Optionally delete OTP to clean up
+    // await Otp.deleteMany({ email });
 
-A new NGO has registered and is awaiting approval. Please review the details:
+    res.status(201).json({ message: 'NGO registered successfully.', ngo: newNgo });
 
-🔹 NGO Name: ${name}
-🔹 Email: ${email}
-🔹 Location: ${location}
-🔹 Phone Number: ${phone_no}
-🔹 Certified: ${isCertified ? "Yes" : "No"}
-
-Please log in to the admin panel to approve.
-
-Regards,
-System Notification Team`;
-
-    await sendEmailToAdmin(adminEmail, subject, message);
-
-    res
-      .status(201)
-      .json({ message: "NGO registered, awaiting admin approval" });
   } catch (error) {
-    console.error("Register NGO error:", error);
-    res.status(500).json({ message: "Server Error", error });
+    console.error('Error registering NGO:', error);
+    res.status(500).json({ message: 'Server error while registering NGO.' });
   }
 };
+
 
 // ✅ Login NGO
 const loginNgo = async (req, res) => {

@@ -12,17 +12,17 @@ const verifyEmailOtp = async (req, res) => {
 
     const now = new Date();
     const expiryTime = new Date(existingOtp.createdAt);
-    expiryTime.setMinutes(expiryTime.getMinutes() + 10); // 10 min expiry
+    expiryTime.setMinutes(expiryTime.getMinutes() + 10);
 
     if (now > expiryTime) {
       return res.status(400).json({ message: "OTP expired" });
     }
 
-    // ✅ Mark as verified
+    // ✅ Mark the OTP as verified
     existingOtp.verified = true;
     await existingOtp.save();
 
-    return res.status(200).json({ message: "Email OTP verified" });
+    return res.status(200).json({ message: "Email verified successfully" });
   } catch (err) {
     console.error("Error verifying email OTP:", err);
     res.status(500).json({ message: "Server error", error: err.message });

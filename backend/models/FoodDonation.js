@@ -24,7 +24,7 @@ const foodDonationSchema = new mongoose.Schema({
   },
   ngoComments: { type: String },
 
-  // ✅ Add assigned NGO
+  // Add assigned NGO
   assignedNGO: { type: mongoose.Schema.Types.ObjectId, ref: "Ngo" },
 
   // Date when the donation is accepted
@@ -32,7 +32,7 @@ const foodDonationSchema = new mongoose.Schema({
 
   notifiedNGOs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Ngo" }],
 
-  // ✅ Track the pickup status and date
+  //  Track the pickup status and date
   pickupStatus: {
     type: String,
     enum: ["Not Picked", "Picked"],

@@ -1,16 +1,18 @@
 const express = require("express");
-const { getAllNgos, getAllResorts,updateNgo, approveNgo, approveResort, updateResort } = require("../controllers/adminController");
+const { getAllNgos, getAllResorts,updateNgo, approveNgo, approveResort, updateResort,loginAdmin } = require("../controllers/adminController");
+const verifyAdminAuth = require("../middlewares/verifyAdminAuth");
 
 const router = express.Router();
 
 // Get all registered NGOs & Resorts
-router.get("/ngos", getAllNgos);
-router.get("/resorts", getAllResorts);
+// Protected routes: only accessible after login
+router.post("/login", loginAdmin);
+router.get("/ngos", verifyAdminAuth, getAllNgos);
+router.get("/resorts", verifyAdminAuth, getAllResorts);
 
-// Approve or reject NGOs & Resorts
-router.put("/ngos/:ngoId/approve", approveNgo);
-router.put("/ngos/update/:ngoId", updateNgo);
-router.put("/resorts/:resortId/approve", approveResort);
-router.put("/resorts/update/:resortId", updateResort);
+router.put("/ngos/:ngoId/approve", verifyAdminAuth, approveNgo);
+router.put("/ngos/update/:ngoId", verifyAdminAuth, updateNgo);
+router.put("/resorts/:resortId/approve", verifyAdminAuth, approveResort);
+router.put("/resorts/update/:resortId", verifyAdminAuth, updateResort);
 
 module.exports = router;

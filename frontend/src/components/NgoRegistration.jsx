@@ -79,7 +79,6 @@ const NgoRegistration = () => {
 
   const getCoordinatesFromAddress = async () => {
     const { addressLine1, city, state, pincode } = formData;
-
     const fullAddress = `${addressLine1}, ${city}, ${state} - ${pincode}`;
 
     try {
@@ -90,7 +89,6 @@ const NgoRegistration = () => {
       });
 
       if (!res.ok) throw new Error(`API responded with ${res.status}`);
-
       const data = await res.json();
 
       if (data.lat && data.lon) {
@@ -108,8 +106,6 @@ const NgoRegistration = () => {
 
   useEffect(() => {
     const { addressLine1, city, state, pincode, latitude, longitude } = formData;
-
-    // Only run forward-geocoding if lat/lon are not already filled
     if (!latitude && !longitude && addressLine1 && city && state && pincode.length === 6) {
       const timer = setTimeout(() => {
         getCoordinatesFromAddress();
@@ -167,14 +163,25 @@ const NgoRegistration = () => {
       return;
     }
 
+    if (!formData.latitude || !formData.longitude) {
+      setMessage("Latitude and Longitude are required. Please use location or enter full address.");
+      return;
+    }
+
     const fullAddress = `${formData.addressLine1}, ${formData.addressLine2}, ${formData.city}, ${formData.state} - ${formData.pincode}`;
 
     const submissionData = {
       ...formData,
       address: fullAddress,
+      location: {
+        type: "Point",
+        coordinates: [
+          parseFloat(formData.longitude),
+          parseFloat(formData.latitude),
+        ],
+      },
     };
 
-    // Clean up fields not needed on backend
     delete submissionData.addressLine1;
     delete submissionData.addressLine2;
     delete submissionData.city;

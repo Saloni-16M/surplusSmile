@@ -39,21 +39,38 @@ const registerNgo = async (req, res) => {
       isCertified,
       address,
       location,
-       emailVerified: true,
+      emailVerified: true,
     });
 
     await newNgo.save();
 
-    // ✅ Optionally delete OTP to clean up
-    // await Otp.deleteMany({ email });
+    // Notify admin
+    const adminEmail = "saloni45055@gmail.com";
+    const subject = "New NGO Registration Pending Approval";
+    const message = `Dear Admin,
 
-    res.status(201).json({ message: 'NGO registered successfully.', ngo: newNgo });
+A new NGO has registered and is awaiting approval. Please review the details:
+
+🔹 Name: ${name}
+🔹 Email: ${email}
+🔹 Phone Number: ${phone_no}
+🔹 Certified: ${isCertified ? "Yes" : "No"}
+
+Please log in to the admin panel to approve.
+
+Regards,
+System Notification Team`;
+
+    await sendEmailToAdmin(adminEmail, subject, message);
+
+    return res.status(201).json({ message: 'NGO registered successfully. Awaiting admin approval.', ngo: newNgo });
 
   } catch (error) {
     console.error('Error registering NGO:', error);
-    res.status(500).json({ message: 'Server error while registering NGO.' });
+    return res.status(500).json({ message: 'Server error while registering NGO.' });
   }
 };
+
 
 
 // ✅ Login NGO

@@ -1,4 +1,4 @@
-# 🌟 NGO & Resort Registration System (MERN + Firebase)  
+# 🌟 NGO & Resort Registration System (MERN)  
 
 🚀 A **MERN** stack application for **NGO & Resort** registration, where admins verify and approve registrations before granting login credentials. Firebase OTP authentication is used for email verification.
 
@@ -16,8 +16,7 @@
 ## **🛠️ Tech Stack**
 🔹 **Frontend**: React.js, Firebase  
 🔹 **Backend**: Node.js, Express.js, MongoDB  
-🔹 **Database**: MongoDB with Mongoose  
-🔹 **Authentication**: Firebase Authentication  
+🔹 **Database**: MongoDB with Mongoose   
 🔹 **Email Service**: Nodemailer  
 
 ---
@@ -28,4 +27,4 @@
 ```sh
 cd backend
 npm init -y
-npm install express mongoose cors dotenv firebase-admin nodemailer
+npm install express mongoose cors dotenv nodemailer

@@ -78,12 +78,7 @@ const ResortCard = ({ donationId, name, food, quantity, expiry, location, foodTy
         Request Pickup
       </button>
 
-      <button
-        onClick={handleConfirmPickup}
-        className="bg-green-600 text-white px-4 py-2 rounded-lg mt-2"
-      >
-        Confirm Pickup
-      </button>
+     
     </div>
   );
 };

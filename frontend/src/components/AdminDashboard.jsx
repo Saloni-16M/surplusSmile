@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchNgos, fetchResorts, approveNgo, approveResort, updateNgo, updateResort } from "../services/apiService";
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
+    const navigate = useNavigate();
     const [ngos, setNgos] = useState([]);
     const [resorts, setResorts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -10,6 +12,12 @@ const AdminDashboard = () => {
     const [comments, setComments] = useState({});
 
     useEffect(() => {
+          const token = localStorage.getItem("adminToken");
+    if (!token) {
+      navigate("/admin/login"); // Redirect if not logged in
+      return;
+    }
+
         const fetchData = async () => {
             try {
                 const ngosData = await fetchNgos();
@@ -30,7 +38,7 @@ const AdminDashboard = () => {
             }
         };
         fetchData();
-    }, []);
+    }, [navigate]);
 
     const handleApprovalChange = async (id, type) => {
         try {

@@ -38,54 +38,63 @@ const NgoLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F0FAF4] p-6">
-      <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-4">NGO Login</h2>
+   <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#E0F7FA] to-[#F1F8E9] p-6">
+  <div className="bg-white shadow-2xl rounded-xl px-8 py-10 w-full max-w-md border border-gray-200">
+    <h2 className="text-3xl font-bold text-center text-blue-700 mb-6 tracking-tight">
+      NGO Login
+    </h2>
 
-        {message && (
-          <p
-            className={`text-center text-sm ${message.includes("successful") ? "text-green-500" : "text-red-500"
-              }`}
-          >
-            {message}
-          </p>
-        )}
+    {message && (
+      <p
+        className={`text-center text-sm mb-4 font-medium ${
+          message.includes("successful") ? "text-green-600" : "text-red-600"
+        }`}
+      >
+        {message}
+      </p>
+    )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="border p-2 rounded-md w-full"
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            className="border p-2 rounded-md w-full"
-            required
-          />
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md w-full font-semibold"
-          >
-            Login
-          </button>
-        </form>
-
-        <p className="text-center mt-4 text-sm">
-          Not registered?{" "}
-          <a href="/ngo/register" className="text-blue-600 font-semibold">
-            Register here
-          </a>
-        </p>
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter your email"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          required
+        />
       </div>
-    </div>
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+        <input
+          type="password"
+          name="password"
+          placeholder="Enter your password"
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          required
+        />
+      </div>
+      <button
+        type="submit"
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full font-semibold transition duration-200"
+      >
+        Login
+      </button>
+    </form>
+
+    <p className="text-center mt-6 text-sm text-gray-600">
+      Not registered?{" "}
+      <a href="/ngo/register" className="text-blue-600 hover:text-blue-800 font-semibold underline">
+        Register here
+      </a>
+    </p>
+  </div>
+</div>
   );
 };
 

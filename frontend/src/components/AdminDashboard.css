@@ -1,64 +1,65 @@
-/* Admin Dashboard Styling */
 .admin-dashboard {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 2rem;
+  background-color: #F9FAF9;
+  color: #2F855A;
 }
 
 .admin-dashboard h2 {
-    text-align: center;
-    color: #2F855A;
-    margin-bottom: 20px;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #2F855A;
+  border-bottom: 2px solid #C6F6D5;
+  padding-bottom: 0.5rem;
 }
 
-.admin-dashboard table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+  background-color: #ffffff;
+  box-shadow: 0 2px 6px rgba(47, 133, 90, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.admin-dashboard th, .admin-dashboard td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
+th, td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid #E2E8F0;
+  font-size: 0.95rem;
 }
 
-.admin-dashboard th {
-    background: #F0FAF4;
-    color: #2F855A;
-    font-weight: bold;
+th {
+  background-color: #EDFDF2;
+  color: #22543D;
+  font-weight: 600;
 }
 
-.admin-dashboard tr:nth-child(even) {
-    background: #f9f9f9;
+td input[type="text"] {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #CBD5E0;
+  border-radius: 5px;
 }
 
-.admin-dashboard input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 100%;
+button {
+  background-color: #2F855A;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.admin-dashboard button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    background: #2F855A;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s;
+button:hover {
+  background-color: #276749;
 }
 
-.admin-dashboard button:hover {
-    background: #276749;
-}
-
-.admin-dashboard .error {
-    color: red;
-    text-align: center;
-    margin-top: 10px;
+.error {
+  color: #E53E3E;
+  font-weight: 500;
+  padding: 1rem;
 }

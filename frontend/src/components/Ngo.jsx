@@ -3,19 +3,27 @@ import { FaBell, FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ResortCard from "./ResortCard";
 import axios from "axios";
+import { useRef } from "react";
 
 const NGO = () => {
   const navigate = useNavigate();
+  const [newRequestsCount, setNewRequestsCount] = useState(0);
   const [resorts, setResorts] = useState([]); // Pending donations
   const [acceptedDonations, setAcceptedDonations] = useState([]); // Accepted donations
   const [loading, setLoading] = useState(true);
+  const [showNotificationBox, setShowNotificationBox] = useState(false);
   const ngoName = localStorage.getItem("ngoName");
+  const notificationRef = useRef(null);
+
   useEffect(() => {
     const token = localStorage.getItem("ngoToken");
-
+ 
     const fetchPendingDonations = async () => {
       try {
         const pendingRes = await axios.get("http://localhost:5000/api/ngo/donations/pending");
+        const previouslyFetchedIds = resorts.map(d => d._id); // from existing state
+    const newOnes = pendingRes.data.filter(d => !previouslyFetchedIds.includes(d._id));
+    setNewRequestsCount(newOnes.length);
         setResorts(pendingRes.data);
       } catch (error) {
         console.error("Error fetching pending donations:", error.response?.data || error.message);
@@ -42,6 +50,16 @@ const NGO = () => {
     };
 
     fetchData();
+     const handleClickOutside = (event) => {
+    if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      setShowNotificationBox(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
   }, [navigate]);
 
   const handleConfirmPickup = async (donationId) => {
@@ -63,8 +81,22 @@ const NGO = () => {
       const updatedAccepted = await axios.get("http://localhost:5000/api/ngo/donations/accepted", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAcceptedDonations(updatedAccepted.data || []);
-
+// ✅ After all async operations
+setAcceptedDonations(prev =>
+  prev.map(donation =>
+    donation._id === donationId
+      ? {
+          ...donation,
+          pickupConfirmedByNGO: true,
+          pickupStatus:
+            donation.pickupConfirmedByResort && donation.pickupConfirmedByNGO
+              ? "Picked"
+              : donation.pickupStatus,
+          pickupDate: new Date(), // Optional: simulate immediate timestamp
+        }
+      : donation
+  )
+);
       // Step 3: Check if resort also confirmed, then mark as picked
       const donation = updatedAccepted.data.find((d) => d._id === donationId);
       if (donation?.pickupConfirmedByResort && donation?.pickupConfirmedByNGO) {
@@ -98,12 +130,28 @@ const NGO = () => {
           >
             Guideline
           </button>
-          <div className="relative">
-            <FaBell className="text-xl text-black cursor-pointer" />
-            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1 rounded-full">
-              0
-            </span>
-          </div>
+<div className="relative" ref={notificationRef}>
+  <FaBell
+    className="text-xl text-black cursor-pointer"
+    onClick={() => setShowNotificationBox(prev => !prev)}
+  />
+  {newRequestsCount > 0 && (
+    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs px-1 rounded-full">
+      {newRequestsCount}
+    </span>
+  )}
+  {showNotificationBox && (
+    <div className="absolute right-0 mt-2 w-64 bg-white border rounded shadow-lg z-10 max-h-60 overflow-y-auto">
+      <p className="text-sm font-semibold px-4 py-2 border-b">🆕 New Donations</p>
+      {resorts.slice(0, newRequestsCount).map((donation) => (
+        <div key={donation._id} className="px-4 py-2 text-sm border-b hover:bg-gray-50">
+          <p className="font-medium">{donation.foodName}</p>
+          <p className="text-gray-600 text-xs">{donation.resortId?.name || "Unknown Resort"}</p>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
           <div className="flex items-center border border-gray-400 rounded-full px-3 py-1 bg-white">
             <input type="text" placeholder="Search" className="outline-none bg-transparent" />
             <FaSearch className="text-gray-600" />

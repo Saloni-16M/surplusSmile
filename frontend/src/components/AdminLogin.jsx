@@ -1,21 +1,21 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const ResortLogin = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+const AdminLogin = () => {
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+
     try {
-      const response = await fetch("http://localhost:5000/api/resort/login", {
+      const response = await fetch("http://localhost:5000/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -24,27 +24,19 @@ const ResortLogin = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
 
-      // ✅ Save token and resortId
-      localStorage.setItem("resortToken", data.token);
-      localStorage.setItem("resortId", data.resort._id);
-       // <-- Store resortId for later use
-          localStorage.setItem('resortName', data.resort.name);
+      localStorage.setItem("adminToken", data.token);
+      navigate("/admin"); // Redirect to dashboard
 
-      setMessage("Login successful! Redirecting...");
-
-      setTimeout(() => {
-        window.location.href = "/resort"; // Redirect to Resort Dashboard
-      }, 1500);
     } catch (error) {
       setMessage(error.message);
     }
   };
 
   return (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F0FAF4] to-[#E8F5E9] p-6">
+<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#E0F7FA] to-[#F1F8E9] p-6">
   <div className="bg-white shadow-2xl rounded-xl px-8 py-10 w-full max-w-md border border-gray-200">
-    <h2 className="text-3xl font-bold text-center text-teal-700 mb-6 tracking-tight">
-      Resort Login
+    <h2 className="text-3xl font-bold text-center text-green-700 mb-6 tracking-tight">
+      Admin Login
     </h2>
 
     {message && (
@@ -66,7 +58,7 @@ const ResortLogin = () => {
           placeholder="Enter your email"
           value={formData.email}
           onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
           required
         />
       </div>
@@ -78,30 +70,23 @@ const ResortLogin = () => {
           placeholder="Enter your password"
           value={formData.password}
           onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 transition"
           required
         />
       </div>
       <button
         type="submit"
-        className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg w-full font-semibold transition duration-200"
+        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg w-full font-semibold transition duration-200"
       >
         Login
       </button>
     </form>
 
-    <p className="text-center mt-6 text-sm text-gray-600">
-      Not registered?{" "}
-      <a
-        href="/resort/register"
-        className="text-teal-600 hover:text-teal-800 font-semibold underline"
-      >
-        Register here
-      </a>
-    </p>
+  
   </div>
+
 </div>
   );
 };
 
-export default ResortLogin;
+export default AdminLogin;

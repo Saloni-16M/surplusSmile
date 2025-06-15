@@ -12,6 +12,8 @@ import Guideline from "./components/Guideline";
 import ActiveRequests from "./components/ActiveRequests";
 import ResortCard from "./components/ResortCard";
 import NgoHome from "./components/NgoHome";
+import AdminLogin from "./components/AdminLogin";
+import GuidelineResort from "./components/GuidelineResort";
 
 function App() {
   return (
@@ -31,6 +33,10 @@ function App() {
           <Route path="/guideline" element={<Guideline />} />
           <Route path="/active-requests" element={<ActiveRequests />} />
           <Route path="/resort-card" element={<ResortCard />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="/guidelineResort" element={<GuidelineResort
+                     />} />
+
         </Routes>
       </div>
     </Router>

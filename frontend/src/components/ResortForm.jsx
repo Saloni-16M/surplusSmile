@@ -61,105 +61,103 @@ const ResortForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex flex-col items-center">
-      <h2 className="text-2xl font-bold text-green-700 mb-4">Food Donation Form</h2>
-      <form 
-        onSubmit={handleSubmit} 
-        className="bg-white p-6 rounded-lg shadow-md w-96 space-y-4"
+<div className="min-h-screen bg-gradient-to-br from-[#F0FAF4] to-[#E8F5E9] p-6 flex flex-col items-center justify-start">
+  <h2 className="text-3xl font-bold text-green-700 mb-6 tracking-tight">Food Donation Form</h2>
+  <form
+    onSubmit={handleSubmit}
+    className="bg-white px-8 py-10 rounded-xl shadow-2xl w-full max-w-md space-y-5 border border-gray-200"
+  >
+    <label className="block">
+      <span className="text-gray-700 font-semibold">Food Name</span>
+      <input
+        type="text"
+        name="foodName"
+        value={formData.foodName}
+        onChange={handleChange}
+        required
+        className="mt-1 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none transition"
+      />
+    </label>
+
+    <label className="block">
+      <span className="text-gray-700 font-semibold">Quantity (plates/kg)</span>
+      <input
+        type="number"
+        name="quantity"
+        value={formData.quantity}
+        onChange={handleChange}
+        required
+        className="mt-1 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+      />
+    </label>
+
+    <label className="block">
+      <span className="text-gray-700 font-semibold">Food Made Date/Time</span>
+      <input
+        type="datetime-local"
+        name="foodMadeDate"
+        value={formData.foodMadeDate}
+        onChange={handleChange}
+        required
+        className="mt-1 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+      />
+    </label>
+
+    <label className="block">
+      <span className="text-gray-700 font-semibold">Food Type</span>
+      <select
+        name="type"
+        value={formData.type}
+        onChange={handleChange}
+        className="mt-1 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
       >
-        <label className="block">
-          <span className="text-gray-700">Food Name:</span>
-          <input 
-            type="text" 
-            name="foodName" 
-            value={formData.foodName} 
-            onChange={handleChange} 
-            required 
-            className="block w-full mt-1 p-2 border rounded-md"
-          />
-        </label>
+        <option>Vegetarian</option>
+        <option>Non-Vegetarian</option>
+        <option>Vegan</option>
+      </select>
+    </label>
 
-        <label className="block">
-          <span className="text-gray-700">Quantity (plates/kg):</span>
-          <input 
-            type="number" 
-            name="quantity" 
-            value={formData.quantity} 
-            onChange={handleChange} 
-            required 
-            className="block w-full mt-1 p-2 border rounded-md"
-          />
-        </label>
+    <label className="block">
+      <span className="text-gray-700 font-semibold">Pickup Address</span>
+      <input
+        type="text"
+        name="pickupAddress"
+        value={formData.pickupAddress}
+        onChange={handleChange}
+        required
+        className="mt-1 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+      />
+    </label>
 
-        <label className="block">
-          <span className="text-gray-700">Food Made Date/Time:</span>
-          <input 
-            type="datetime-local" 
-            name="foodMadeDate" 
-            value={formData.foodMadeDate} 
-            onChange={handleChange} 
-            required 
-            className="block w-full mt-1 p-2 border rounded-md"
-          />
-        </label>
+    <label className="block">
+      <span className="text-gray-700 font-semibold">Special Notes (Optional)</span>
+      <textarea
+        name="additionalInfo"
+        value={formData.additionalInfo}
+        onChange={handleChange}
+        className="mt-1 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+      />
+    </label>
 
-        <label className="block">
-          <span className="text-gray-700">Food Type:</span>
-          <select 
-            name="type" 
-            value={formData.type} 
-            onChange={handleChange} 
-            className="block w-full mt-1 p-2 border rounded-md"
-          >
-            <option>Vegetarian</option>
-            <option>Non-Vegetarian</option>
-            <option>Vegan</option>
-          </select>
-        </label>
+    <label className="block">
+      <span className="text-gray-700 font-semibold">Image URL (Optional)</span>
+      <input
+        type="text"
+        name="imageUrl"
+        value={formData.imageUrl}
+        onChange={handleChange}
+        className="mt-1 w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+      />
+    </label>
 
-        <label className="block">
-          <span className="text-gray-700">Pickup Address:</span>
-          <input 
-            type="text" 
-            name="pickupAddress" 
-            value={formData.pickupAddress} 
-            onChange={handleChange} 
-            required 
-            className="block w-full mt-1 p-2 border rounded-md"
-          />
-        </label>
-
-        <label className="block">
-          <span className="text-gray-700">Special Notes (Optional):</span>
-          <textarea 
-            name="additionalInfo" 
-            value={formData.additionalInfo} 
-            onChange={handleChange} 
-            className="block w-full mt-1 p-2 border rounded-md"
-          />
-        </label>
-
-        {/* Optional image URL input */}
-        <label className="block">
-          <span className="text-gray-700">Image URL (Optional):</span>
-          <input 
-            type="text" 
-            name="imageUrl" 
-            value={formData.imageUrl} 
-            onChange={handleChange} 
-            className="block w-full mt-1 p-2 border rounded-md"
-          />
-        </label>
-
-        <button 
-          type="submit" 
-          className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
-        >
-          Submit
-        </button>
-      </form>
-    </div>
-  );
+    <button
+      type="submit"
+      className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold text-lg transition duration-200"
+    >
+      Submit Donation
+    </button>
+  </form>
+</div>  );
 };
 
 export default ResortForm;

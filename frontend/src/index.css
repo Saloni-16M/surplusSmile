@@ -5,7 +5,7 @@
 @tailwind components;
 @tailwind utilities;
 
-.form-container {
+ .form-container {
   max-width: 400px;
   margin: auto;
   padding: 20px;
@@ -17,7 +17,7 @@
 }
 
 /* Input Fields */
-.form-container input {
+ .form-container input {
   width: 100%;
   padding: 10px;
   margin: 10px 0;
@@ -26,25 +26,25 @@
 }
 
 /* Checkbox Label */
-.checkbox-label {
+ .checkbox-label {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   margin: 10px 0;
-}
+} 
 
 /* Submit Button */
 .submit-button {
   width: 100%;
   padding: 10px;
-  background: #28a745;
+  background: #c0dfc7;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
+} 
 
-.submit-button:hover {
+ .submit-button:hover {
   background: #218838;
-}
+}  

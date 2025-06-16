@@ -41,7 +41,7 @@ const ResortLogin = () => {
   };
 
   return (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F0FAF4] to-[#E8F5E9] p-6">
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#E0F7FA] to-[#F1F8E9] p-6">
   <div className="bg-white shadow-2xl rounded-xl px-8 py-10 w-full max-w-md border border-gray-200">
     <h2 className="text-3xl font-bold text-center text-teal-700 mb-6 tracking-tight">
       Resort Login

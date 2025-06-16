@@ -27,7 +27,7 @@ const NgoRegistration = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
+  
   const getAddressFromCoordinates = async (lat, lon) => {
     try {
       const res = await fetch("http://localhost:5000/api/location/reverse-geocode", {
@@ -222,8 +222,10 @@ const NgoRegistration = () => {
 
   return (
 /* Updated styles inside JSX */
-<div className="max-w-md mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg border border-gray-200">
-  <h2 className="text-3xl font-bold mb-6 text-center text-green-700">NGO Registration</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#E0F7FA] to-[#F1F8E9] p-6">
+
+<div className="max-w-md mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg  border border-gray-200">
+  <h2 className="text-3xl font-bold mb-6 text-center text-teal-700">NGO Registration</h2>
 
   {message && <p className="text-sm text-center text-red-600 mb-4">{message}</p>}
 
@@ -291,38 +293,37 @@ const NgoRegistration = () => {
       required
     />
 
-    <textarea
-      name="address"
-      placeholder="Address"
-      value={formData.address}
-      onChange={handleChange}
-      className="border border-gray-300 p-3 rounded-md w-full focus:ring-2 focus:ring-green-500"
-      required
-    />
+    <input type="text" name="addressLine1" placeholder="Address Line 1" value={formData.addressLine1} onChange={handleChange} className="border p-3 rounded-md w-full focus:ring-2 focus:ring-green-500" required />
+    <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} className="border p-3 rounded-md w-full focus:ring-2 focus:ring-green-500" required />
+          <input type="text" name="state" placeholder="State" value={formData.state} onChange={handleChange} className="border p-3 rounded-md w-full focus:ring-2 focus:ring-green-500" required />
+          <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} className="border p-3 rounded-md w-full focus:ring-2 focus:ring-green-500" required />
 
-    <input
-      type="text"
-      name="location"
-      placeholder="Location"
-      value={formData.location}
-      onChange={handleChange}
-      className="border border-gray-300 p-3 rounded-md w-full focus:ring-2 focus:ring-green-500"
-      required
-    />
+
+  
 
     <div className="flex items-center space-x-3">
       <input type="checkbox" name="isCertified" checked={formData.isCertified} onChange={handleChange} />
       <label htmlFor="isCertified" className="text-gray-700 font-semibold">Certified NGO</label>
     </div>
+        <button type="button" onClick={fetchLocation} className="bg-yellow-500 text-white px-3 py-1 rounded-md w-full">
+          📍 Detect My Location
+        </button>
+
+        {formData.latitude && formData.longitude && (
+          <p className="text-center text-sm text-gray-700">
+            📍 Latitude: {formData.latitude} | Longitude: {formData.longitude}
+          </p>
+        )}
 
     <button
       type="submit"
-      className="bg-green-600 text-white px-6 py-3 rounded-md shadow-lg hover:bg-green-700 transition w-full font-semibold text-lg"
+      className="bg-teal-600 text-white px-6 py-3 rounded-md shadow-lg hover:bg-green-700 transition w-full font-semibold text-lg"
     >
       Register
     </button>
   </form>
-</div>  );
+</div> 
+</div> );
 };
 
 export default NgoRegistration;

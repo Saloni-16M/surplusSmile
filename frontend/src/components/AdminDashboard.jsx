@@ -6,6 +6,8 @@ import "./AdminDashboard.css";
 const AdminDashboard = () => {
     const navigate = useNavigate();
     const [ngos, setNgos] = useState([]);
+    const [ngoAddresses, setNgoAddresses] = useState({});
+const [resortAddresses, setResortAddresses] = useState({});
     const [resorts, setResorts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -17,6 +19,7 @@ const AdminDashboard = () => {
       navigate("/admin/login"); // Redirect if not logged in
       return;
     }
+    
 
         const fetchData = async () => {
             try {
@@ -38,8 +41,42 @@ const AdminDashboard = () => {
             }
         };
         fetchData();
-    }, [navigate]);
+        }, [navigate]);
+        useEffect(() => {
+  const fetchAddresses = async () => {
+    const newNgoAddresses = {};
+    const newResortAddresses = {};
 
+    for (const ngo of ngos) {
+      newNgoAddresses[ngo._id] = await getAddressFromCoordinates(
+        ngo.location.coordinates[1], ngo.location.coordinates[0]
+      );
+    }
+
+    for (const resort of resorts) {
+      newResortAddresses[resort._id] = await getAddressFromCoordinates(
+        resort.location.coordinates[1], resort.location.coordinates[0]
+      );
+    }
+
+    setNgoAddresses(newNgoAddresses);
+    setResortAddresses(newResortAddresses);
+  };
+
+  fetchAddresses();
+}, [ngos, resorts]);
+    
+const getAddressFromCoordinates = async (lat, lon) => {
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+    const data = await res.json();
+    
+    return data.display_name || "Unknown location";
+  } catch (error) {
+    console.error("Failed to fetch address:", error);
+    return "Unknown location";
+  }
+};
     const handleApprovalChange = async (id, type) => {
         try {
             if (type === "ngo") {
@@ -103,9 +140,8 @@ const AdminDashboard = () => {
                             <tr key={ngo._id}>
                                 <td>{ngo.name}</td>
                                 <td>{ngo.email}</td>
-                                <td>{ngo.location}</td>
-                                <td>{ngo.adminComments || "No comments yet"}</td>
-                                <td>
+<td>{ngoAddresses[ngo._id] || "Fetching address..."}</td>
+                              <td>
                                     {!ngo.adminComments && (
                                         <input
                                             type="text"
@@ -152,7 +188,7 @@ const AdminDashboard = () => {
                             <tr key={resort._id}>
                                 <td>{resort.name}</td>
                                 <td>{resort.email}</td>
-                                <td>{resort.location}</td>
+<td>{resortAddresses[resort._id] || "Fetching address..."}</td>
                                 <td>{resort.adminComments || "No comments yet"}</td>
                                 <td>
                                     {!resort.adminComments && (

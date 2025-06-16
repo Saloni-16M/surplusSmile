@@ -35,7 +35,7 @@ const AdminLogin = () => {
   return (
 <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#E0F7FA] to-[#F1F8E9] p-6">
   <div className="bg-white shadow-2xl rounded-xl px-8 py-10 w-full max-w-md border border-gray-200">
-    <h2 className="text-3xl font-bold text-center text-green-700 mb-6 tracking-tight">
+    <h2 className="text-3xl font-bold text-center text-teal-700 mb-6 tracking-tight">
       Admin Login
     </h2>
 
@@ -76,7 +76,7 @@ const AdminLogin = () => {
       </div>
       <button
         type="submit"
-        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg w-full font-semibold transition duration-200"
+        className="bg-teal-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg w-full font-semibold transition duration-200"
       >
         Login
       </button>

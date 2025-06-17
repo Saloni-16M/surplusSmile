@@ -7,18 +7,18 @@ const reverseGeocodeRoute = require('./routes/reverseGeocode');
 
 const YAML = require("yamljs");
 const swaggerUi = require("swagger-ui-express");
-// const Admin = require("./models/Admin");
-// const bcrypt = require("bcryptjs");
+const Admin = require("./models/Admin");
+const bcrypt = require("bcryptjs");
 
-// async function createAdmin() {
-//   const existing = await Admin.findOne({ email: "admin@example.com" });
-//   if (!existing) {
-//     const hashed = await bcrypt.hash("admin123", 10);
-//     await Admin.create({ name: "Super Admin", email: "admin@example.com", password: hashed });
-//     console.log("Admin created");
-//   }
-// }
-// createAdmin();
+async function createAdmin() {
+  const existing = await Admin.findOne({ email: "admin@example.com" });
+  if (!existing) {
+    const hashed = await bcrypt.hash("admin123", 10);
+    await Admin.create({ name: "Super Admin", email: "admin@example.com", password: hashed });
+    console.log("Admin created");
+  }
+}
+createAdmin();
 
 dotenv.config();
 connectDB();

@@ -14,37 +14,68 @@ const registerNgo = async (req, res) => {
   try {
     const { name, email, phone_no, isCertified, address, location } = req.body;
 
-    // Validation
-    if (!name || !email || !phone_no || !address || !location?.coordinates?.length) {
-      return res.status(400).json({ message: 'All required fields must be filled.' });
+    // Step 1: Validate required fields
+    if (!name || !email || !phone_no || !address) {
+      return res
+        .status(400)
+        .json({ message: "All required fields must be filled." });
     }
 
-    // 🔒 Check if email is verified via OTP
-    const otpRecord = await Otp.findOne({ email, type: "email", verified: true });
+    // Step 2: Validate location and coordinates
+    let parsedLocation = null;
 
+    if (location?.coordinates && location.coordinates.length === 2) {
+      const lon = parseFloat(location.coordinates[0]);
+      const lat = parseFloat(location.coordinates[1]);
+
+      if (!isNaN(lon) && !isNaN(lat)) {
+        parsedLocation = {
+          type: "Point",
+          coordinates: [lon, lat],
+        };
+      }
+    }
+
+    // Step 3: Check if email is verified via OTP
+    const otpRecord = await Otp.findOne({
+      email,
+      type: "email",
+      verified: true,
+    });
     if (!otpRecord) {
-      return res.status(403).json({ message: 'Please verify your email before registering.' });
+      return res
+        .status(403)
+        .json({ message: "Please verify your email before registering." });
     }
 
-    // Check for duplicate email
+    // Step 4: Check for duplicate NGO
     const existingNgo = await Ngo.findOne({ email });
     if (existingNgo) {
-      return res.status(409).json({ message: 'NGO already registered with this email.' });
+      return res
+        .status(409)
+        .json({ message: "NGO already registered with this email." });
     }
 
+    // Step 5: Parse coordinates to floats
+    // const parsedLocation = {
+    //   type: "Point",
+    //   coordinates: [parseFloat(coords[0]), parseFloat(coords[1])],
+    // };
+
+    // Step 6: Create new NGO
     const newNgo = new Ngo({
       name,
       email,
       phone_no,
       isCertified,
       address,
-      location,
+      location: parsedLocation,
       emailVerified: true,
     });
 
     await newNgo.save();
 
-    // Notify admin
+    // Step 7: Notify Admin
     const adminEmail = "saloni45055@gmail.com";
     const subject = "New NGO Registration Pending Approval";
     const message = `Dear Admin,
@@ -63,15 +94,18 @@ System Notification Team`;
 
     await sendEmailToAdmin(adminEmail, subject, message);
 
-    return res.status(201).json({ message: 'NGO registered successfully. Awaiting admin approval.', ngo: newNgo });
-
+    // Step 8: Return success
+    return res.status(201).json({
+      message: "NGO registered successfully. Awaiting admin approval.",
+      ngo: newNgo,
+    });
   } catch (error) {
-    console.error('Error registering NGO:', error);
-    return res.status(500).json({ message: 'Server error while registering NGO.' });
+    console.error("❌ Error registering NGO:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error while registering NGO." });
   }
 };
-
-
 
 // ✅ Login NGO
 const loginNgo = async (req, res) => {

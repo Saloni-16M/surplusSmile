@@ -24,4 +24,4 @@ const ngoSchema = new mongoose.Schema({
 
 ngoSchema.index({ location: "2dsphere" }); // For geospatial queries
 
-module.exports = mongoose.model('NGO', ngoSchema);
+module.exports = mongoose.model('Ngo', ngoSchema);

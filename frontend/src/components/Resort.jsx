@@ -126,7 +126,7 @@ const fetchDonations = async () => {
           <p className="text-xs text-gray-600">
             From: {donation.assignedNGO?.name || "NGO"}
           </p>
-          <button
+          {/* <button
             className="mt-1 text-blue-600 hover:underline text-xs"
             onClick={() =>
               notifyViaWhatsApp(
@@ -136,7 +136,7 @@ const fetchDonations = async () => {
             }
           >
             Send WhatsApp Message
-          </button>
+          </button> */}
         </div>
       ))}
     </div>

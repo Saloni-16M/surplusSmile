@@ -6,8 +6,8 @@ const NgoRegistration = () => {
     email: "",
     phone_no: "",
     isCertified: false,
-    latitude: "",
-    longitude: "",
+    latitude: null,
+    longitude: null,
     addressLine1: "",
     addressLine2: "",
     city: "",
@@ -77,42 +77,42 @@ const NgoRegistration = () => {
     }
   };
 
-  const getCoordinatesFromAddress = async () => {
-    const { addressLine1, city, state, pincode } = formData;
-    const fullAddress = `${addressLine1}, ${city}, ${state} - ${pincode}`;
+  // const getCoordinatesFromAddress = async () => {
+  //   const { addressLine1, city, state, pincode } = formData;
+  //   const fullAddress = `${addressLine1}, ${city}, ${state} - ${pincode}`;
 
-    try {
-      const res = await fetch("http://localhost:5000/api/geocode/get-coordinates", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: fullAddress }),
-      });
+  //   try {
+  //     const res = await fetch("http://localhost:5000/api/geocode/get-coordinates", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ address: fullAddress }),
+  //     });
 
-      if (!res.ok) throw new Error(`API responded with ${res.status}`);
-      const data = await res.json();
+  //     if (!res.ok) throw new Error(`API responded with ${res.status}`);
+  //     const data = await res.json();
 
-      if (data.lat && data.lon) {
-        setFormData((prev) => ({
-          ...prev,
-          latitude: data.lat,
-          longitude: data.lon,
-        }));
-        setMessage("Coordinates fetched from address.");
-      }
-    } catch (error) {
-      setMessage("Failed to get coordinates: " + error.message);
-    }
-  };
+  //     if (data.lat && data.lon) {
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         latitude: data.lat,
+  //         longitude: data.lon,
+  //       }));
+  //       setMessage("Coordinates fetched from address.");
+  //     }
+  //   } catch (error) {
+  //     setMessage("Failed to get coordinates: " + error.message);
+  //   }
+  // };
 
-  useEffect(() => {
-    const { addressLine1, city, state, pincode, latitude, longitude } = formData;
-    if (!latitude && !longitude && addressLine1 && city && state && pincode.length === 6) {
-      const timer = setTimeout(() => {
-        getCoordinatesFromAddress();
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [formData.addressLine1, formData.city, formData.state, formData.pincode, formData.latitude, formData.longitude]);
+  // useEffect(() => {
+  //   const { addressLine1, city, state, pincode, latitude, longitude } = formData;
+  //   if (!latitude && !longitude && addressLine1 && city && state && pincode.length === 6) {
+  //     const timer = setTimeout(() => {
+  //       getCoordinatesFromAddress();
+  //     }, 1000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [formData.addressLine1, formData.city, formData.state, formData.pincode, formData.latitude, formData.longitude]);
 
   const handleSendEmailOtp = async () => {
     if (!formData.email) {
@@ -156,70 +156,74 @@ const NgoRegistration = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!isOtpVerified) {
-      setMessage("Please verify your Email OTP before submitting.");
-      return;
-    }
+  if (!isOtpVerified) {
+    setMessage("Please verify your Email OTP before submitting.");
+    return;
+  }
 
-    if (!formData.addressLine1 || !formData.city || !formData.state || formData.pincode.length !== 6) {
-      setMessage("Please fill in complete address details.");
-      return;
-    }
+  if (!formData.addressLine1 || !formData.city || !formData.state || formData.pincode.length !== 6) {
+    setMessage("Please fill in complete address details.");
+    return;
+  }
 
+  const fullAddress = `${formData.addressLine1}, ${formData.addressLine2}, ${formData.city}, ${formData.state} - ${formData.pincode}`;
 
-    const fullAddress = `${formData.addressLine1}, ${formData.addressLine2}, ${formData.city}, ${formData.state} - ${formData.pincode}`;
+  const lon = parseFloat(formData.longitude);
+  const lat = parseFloat(formData.latitude);
 
-    const submissionData = {
-      ...formData,
-      address: fullAddress,
-      location: {
-        type: "Point",
-        coordinates: [
-          parseFloat(formData.longitude),
-          parseFloat(formData.latitude),
-        ],
-      },
-    };
-
-    delete submissionData.addressLine1;
-    delete submissionData.addressLine2;
-    delete submissionData.city;
-    delete submissionData.state;
-    delete submissionData.pincode;
-
-    try {
-      const response = await fetch("http://localhost:5000/api/ngo/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(submissionData),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-
-      setMessage("NGO registered successfully!");
-      setFormData({
-        name: "",
-        email: "",
-        phone_no: "",
-        isCertified: false,
-        latitude: "",
-        longitude: "",
-        addressLine1: "",
-        addressLine2: "",
-        city: "",
-        state: "",
-        pincode: "",
-      });
-      setOtp("");
-      setIsOtpSent(false);
-      setIsOtpVerified(false);
-    } catch (error) {
-      setMessage(error.message);
-    }
+  const submissionData = {
+    ...formData,
+    address: fullAddress,
   };
+
+  // Only add location if coordinates are valid
+  if (!isNaN(lon) && !isNaN(lat)) {
+    submissionData.location = {
+      type: "Point",
+      coordinates: [lon, lat],
+    };
+  }
+
+  // Remove the original address fields
+  delete submissionData.addressLine1;
+  delete submissionData.addressLine2;
+  delete submissionData.city;
+  delete submissionData.state;
+  delete submissionData.pincode;
+
+  try {
+    const response = await fetch("http://localhost:5000/api/ngo/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(submissionData),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message);
+
+    setMessage("NGO registered successfully!");
+    setFormData({
+      name: "",
+      email: "",
+      phone_no: "",
+      isCertified: false,
+      latitude: null,
+      longitude: null,
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      state: "",
+      pincode: "",
+    });
+    setOtp("");
+    setIsOtpSent(false);
+    setIsOtpVerified(false);
+  } catch (error) {
+    setMessage(error.message);
+  }
+};
 
   return (
     /* Updated styles inside JSX */

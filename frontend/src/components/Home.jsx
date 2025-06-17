@@ -288,19 +288,19 @@ const Home = () => {
       <div className="w-full bg-teal-700 text-white py-12">
         <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 px-6">
           <div className="text-center">
-            <div className="text-4xl font-bold mb-2">100+</div>
+            <div className="text-4xl font-bold mb-2">0</div>
             <div className="text-teal-100">Partner Resorts</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold mb-2">250+</div>
+            <div className="text-4xl font-bold mb-2">0</div>
             <div className="text-teal-100">Registered NGOs</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold mb-2">10K+</div>
+            <div className="text-4xl font-bold mb-2">0</div>
             <div className="text-teal-100">Meals Donated</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold mb-2">15+</div>
+            <div className="text-4xl font-bold mb-2">0</div>
             <div className="text-teal-100">Cities Covered</div>
           </div>
         </div>
@@ -353,7 +353,7 @@ const Home = () => {
               key={index}
               className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition border border-teal-50 flex flex-col items-center text-center"
             >
-              <div className="text-4xl mb-4">{feature.icon}</div>
+              {/* <div className="text-4xl mb-4">{feature.icon}</div> */}
               <h4 className="text-xl font-bold text-teal-700 mb-2">{feature.title}</h4>
               <p className="text-gray-600">{feature.description}</p>
             </div>
@@ -473,11 +473,10 @@ const Home = () => {
               <div className="flex gap-4 mb-4">
                 <a href="#" className="text-teal-200 hover:text-white text-2xl transition">📱</a>
                 <a href="#" className="text-teal-200 hover:text-white text-2xl transition">📘</a>
-                <a href="#" className="text-teal-200 hover:text-white text-2xl transition">📸</a>
-                <a href="#" className="text-teal-200 hover:text-white text-2xl transition">🐦</a>
+
               </div>
               <p className="text-teal-200">
-                Email: <a href="mailto:info@surplussmile.org" className="hover:text-white transition">info@surplussmile.org</a>
+                Email: <a href="mailto:surplusmile@gmail.com" className="hover:text-white transition">surplussmile@gmail.com</a>
               </p>
             </div>
           </div>

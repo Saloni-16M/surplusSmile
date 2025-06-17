@@ -48,8 +48,10 @@ const fetchDonations = async () => {
     // Identify ones where NGO has accepted but Resort hasn't confirmed
     const pendingPickup = donations.filter(
       d => d.pickupConfirmedByNGO && !d.pickupConfirmedByResort
+      
     );
-
+console.log("Updated donations:", donations);
+console.log("Pending pickups:", pendingPickup);
     setDonationData(donations);
     setNewPickupRequests(pendingPickup);
   } catch (error) {
@@ -58,16 +60,10 @@ const fetchDonations = async () => {
 };  const handleConfirmByResort = async (donationId) => {
     try {
       // Step 1: Confirm pickup by Resort
-      await axios.put(
-        `http://localhost:5000/api/pickup/confirm-by-resort/${donationId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+ console.log("Confirming pickup for:", donationId);
+    await axios.put(`http://localhost:5000/api/pickup/confirm-by-resort/${donationId}`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
       // Step 2: Optionally mark as picked if NGO already confirmed
       const updated = await axios.get(
         `http://localhost:5000/api/resort/donations/${resortId}/track`,

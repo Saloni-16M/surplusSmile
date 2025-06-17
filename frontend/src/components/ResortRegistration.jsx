@@ -80,11 +80,11 @@ const ResortRegistration = () => {
     const lat = Number(formData.latitude);
     const lon = Number(formData.longitude);
 
-    if (isNaN(lat) || isNaN(lon)) {
-      setMessage("Latitude or Longitude is invalid or missing.");
-      setLoading(false);
-      return;
-    }
+    // if (isNaN(lat) || isNaN(lon)) {
+    //   setMessage("Latitude or Longitude is invalid or missing.");
+    //   setLoading(false);
+    //   return;
+    // }
 
 const fullAddress = `${formData.addressLine1}, ${formData.city}, ${formData.state} - ${formData.pincode}`;
     const submissionData = {

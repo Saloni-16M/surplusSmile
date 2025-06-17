@@ -27,7 +27,7 @@ const NgoRegistration = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-  
+
   const getAddressFromCoordinates = async (lat, lon) => {
     try {
       const res = await fetch("http://localhost:5000/api/location/reverse-geocode", {
@@ -163,10 +163,11 @@ const NgoRegistration = () => {
       return;
     }
 
-    if (!formData.latitude || !formData.longitude) {
-      setMessage("Latitude and Longitude are required. Please use location or enter full address.");
+    if (!formData.addressLine1 || !formData.city || !formData.state || formData.pincode.length !== 6) {
+      setMessage("Please fill in complete address details.");
       return;
     }
+
 
     const fullAddress = `${formData.addressLine1}, ${formData.addressLine2}, ${formData.city}, ${formData.state} - ${formData.pincode}`;
 
@@ -221,109 +222,109 @@ const NgoRegistration = () => {
   };
 
   return (
-/* Updated styles inside JSX */
+    /* Updated styles inside JSX */
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#E0F7FA] to-[#F1F8E9] p-6">
 
-<div className="max-w-md mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg  border border-gray-200">
-  <h2 className="text-3xl font-bold mb-6 text-center text-teal-700">NGO Registration</h2>
+      <div className="max-w-md mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg  border border-gray-200">
+        <h2 className="text-3xl font-bold mb-6 text-center text-teal-700">NGO Registration</h2>
 
-  {message && <p className="text-sm text-center text-red-600 mb-4">{message}</p>}
+        {message && <p className="text-sm text-center text-red-600 mb-4">{message}</p>}
 
-  <form onSubmit={handleSubmit} className="space-y-6">
-    <input
-      type="text"
-      name="name"
-      placeholder="NGO Name"
-      value={formData.name}
-      onChange={handleChange}
-      className="border border-gray-300 p-3 rounded-md w-full focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
-      required
-    />
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <input
+            type="text"
+            name="name"
+            placeholder="NGO Name"
+            value={formData.name}
+            onChange={handleChange}
+            className="border border-gray-300 p-3 rounded-md w-full focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+            required
+          />
 
-    <div className="flex space-x-3">
-      <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={handleChange}
-        className="border border-gray-300 p-3 rounded-md w-full focus:ring-2 focus:ring-green-500"
-        required
-      />
-      <button
-        type="button"
-        onClick={handleSendEmailOtp}
-        className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition"
-      >
-        Send OTP
-      </button>
-    </div>
+          <div className="flex space-x-3">
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              className="border border-gray-300 p-3 rounded-md w-full focus:ring-2 focus:ring-green-500"
+              required
+            />
+            <button
+              type="button"
+              onClick={handleSendEmailOtp}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition"
+            >
+              Send OTP
+            </button>
+          </div>
 
-    {isOtpSent && !isOtpVerified && (
-      <div className="space-y-3">
-        <input
-          type="text"
-          placeholder="Enter OTP"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          className="border border-gray-300 p-3 rounded-md w-full focus:ring-2 focus:ring-green-500"
-          required
-        />
-        <button
-          type="button"
-          onClick={verifyEmailOtp}
-          className="bg-blue-600 text-white px-5 py-2 rounded-md shadow-md hover:bg-blue-700 transition w-full"
-        >
-          Verify OTP
-        </button>
-      </div>
-    )}
+          {isOtpSent && !isOtpVerified && (
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="Enter OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="border border-gray-300 p-3 rounded-md w-full focus:ring-2 focus:ring-green-500"
+                required
+              />
+              <button
+                type="button"
+                onClick={verifyEmailOtp}
+                className="bg-blue-600 text-white px-5 py-2 rounded-md shadow-md hover:bg-blue-700 transition w-full"
+              >
+                Verify OTP
+              </button>
+            </div>
+          )}
 
-    {isOtpVerified && (
-      <p className="text-green-600 text-sm text-center font-semibold">✅ Email Verified</p>
-    )}
+          {isOtpVerified && (
+            <p className="text-green-600 text-sm text-center font-semibold">✅ Email Verified</p>
+          )}
 
-    <input
-      type="tel"
-      name="phone_no"
-      placeholder="Phone Number"
-      value={formData.phone_no}
-      onChange={handleChange}
-      className="border border-gray-300 p-3 rounded-md w-full focus:ring-2 focus:ring-green-500"
-      required
-    />
+          <input
+            type="tel"
+            name="phone_no"
+            placeholder="Phone Number"
+            value={formData.phone_no}
+            onChange={handleChange}
+            className="border border-gray-300 p-3 rounded-md w-full focus:ring-2 focus:ring-green-500"
+            required
+          />
 
-    <input type="text" name="addressLine1" placeholder="Address Line 1" value={formData.addressLine1} onChange={handleChange} className="border p-3 rounded-md w-full focus:ring-2 focus:ring-green-500" required />
-    <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} className="border p-3 rounded-md w-full focus:ring-2 focus:ring-green-500" required />
+          <input type="text" name="addressLine1" placeholder="Address Line 1" value={formData.addressLine1} onChange={handleChange} className="border p-3 rounded-md w-full focus:ring-2 focus:ring-green-500" required />
+          <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} className="border p-3 rounded-md w-full focus:ring-2 focus:ring-green-500" required />
           <input type="text" name="state" placeholder="State" value={formData.state} onChange={handleChange} className="border p-3 rounded-md w-full focus:ring-2 focus:ring-green-500" required />
           <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} className="border p-3 rounded-md w-full focus:ring-2 focus:ring-green-500" required />
 
 
-  
 
-    <div className="flex items-center space-x-3">
-      <input type="checkbox" name="isCertified" checked={formData.isCertified} onChange={handleChange} />
-      <label htmlFor="isCertified" className="text-gray-700 font-semibold">Certified NGO</label>
-    </div>
-        <button type="button" onClick={fetchLocation} className="bg-yellow-500 text-white px-3 py-1 rounded-md w-full">
-          📍 Detect My Location
-        </button>
 
-        {formData.latitude && formData.longitude && (
-          <p className="text-center text-sm text-gray-700">
-            📍 Latitude: {formData.latitude} | Longitude: {formData.longitude}
-          </p>
-        )}
+          <div className="flex items-center space-x-3">
+            <input type="checkbox" name="isCertified" checked={formData.isCertified} onChange={handleChange} />
+            <label htmlFor="isCertified" className="text-gray-700 font-semibold">Certified NGO</label>
+          </div>
+          <button type="button" onClick={fetchLocation} className="bg-yellow-500 text-white px-3 py-1 rounded-md w-full">
+            📍 Detect My Location
+          </button>
 
-    <button
-      type="submit"
-      className="bg-teal-600 text-white px-6 py-3 rounded-md shadow-lg hover:bg-green-700 transition w-full font-semibold text-lg"
-    >
-      Register
-    </button>
-  </form>
-</div> 
-</div> );
+          {formData.latitude && formData.longitude && (
+            <p className="text-center text-sm text-gray-700">
+              📍 Latitude: {formData.latitude} | Longitude: {formData.longitude}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            className="bg-teal-600 text-white px-6 py-3 rounded-md shadow-lg hover:bg-green-700 transition w-full font-semibold text-lg"
+          >
+            Register
+          </button>
+        </form>
+      </div>
+    </div>);
 };
 
 export default NgoRegistration;

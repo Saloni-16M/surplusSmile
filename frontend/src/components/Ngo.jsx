@@ -20,7 +20,10 @@ const NGO = () => {
  
     const fetchPendingDonations = async () => {
       try {
-        const pendingRes = await axios.get("http://localhost:5000/api/ngo/donations/pending");
+        const pendingRes = await axios.get("http://localhost:5000/api/ngo/donations/pending", {
+  headers: { Authorization: `Bearer ${token}` },
+});
+
         const previouslyFetchedIds = resorts.map(d => d._id); // from existing state
     const newOnes = pendingRes.data.filter(d => !previouslyFetchedIds.includes(d._id));
     setNewRequestsCount(newOnes.length);

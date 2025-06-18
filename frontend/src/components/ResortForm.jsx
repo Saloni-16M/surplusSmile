@@ -11,10 +11,11 @@ const ResortForm = () => {
     additionalInfo: "",
     imageUrl: "" // optional
   });
-
+ const token = localStorage.getItem("resortToken");
   // Example: Assume resortId is stored in localStorage after login
   useEffect(() => {
     const storedResortId = localStorage.getItem("resortId");
+     
     if (storedResortId) {
       setFormData((prev) => ({ ...prev, resortId: storedResortId }));
     }
@@ -31,8 +32,10 @@ const ResortForm = () => {
       const res = await fetch("http://localhost:5000/api/resort/donate", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
           // You can add Authorization header if token-based auth is used
+          Authorization: `Bearer ${token}`
+
         },
         body: JSON.stringify(formData)
       });

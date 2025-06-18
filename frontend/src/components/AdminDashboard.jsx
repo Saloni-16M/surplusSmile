@@ -104,7 +104,7 @@ const AdminDashboard = () => {
           <th>Name</th>
           <th>Email</th>
           <th>Address</th>
-          <th>Admin Comments</th>
+          {/* <th>Admin Comments</th> */}
           <th>Approval</th>
           <th>Actions</th>
         </tr>
@@ -120,7 +120,7 @@ const AdminDashboard = () => {
               <td>{item.name}</td>
               <td>{item.email}</td>
               <td>{address}</td>
-              <td>
+              {/* <td>
                 {item.adminComments ? item.adminComments : (
                   <input
                     type="text"
@@ -130,7 +130,7 @@ const AdminDashboard = () => {
                     }
                   />
                 )}
-              </td>
+              </td> */}
               <td>{item.adminApprovalStatus}</td>
               <td>
                 {item.adminApprovalStatus !== "Approved" && (

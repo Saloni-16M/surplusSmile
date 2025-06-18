@@ -26,8 +26,8 @@ router.post("/verify-otp", verifyEmailOtp);
 // router.post("/verify-phone-otp", verifyPhoneOtp);
 
 // NGO Access to Donations
-router.get("/donations/pending", getAllPendingDonationsForNGO); // Get pending donations
-router.patch("/donation/:donationId/status", updateDonationStatus); // NGO accepts/rejects
+router.get("/donations/pending",authenticateJWT, getAllPendingDonationsForNGO); // Get pending donations
+router.patch("/donation/:donationId/status",authenticateJWT, updateDonationStatus); // NGO accepts/rejects
 
 router.get("/donations/accepted", authenticateJWT, getAcceptedDonationsByNgo);
 module.exports = router;

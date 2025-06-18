@@ -8,12 +8,12 @@ const {
 } = require("../controllers/pickupController");
 
 // NGO confirms pickup
-router.put("/ngo/:donationId", confirmPickupByNgo);
+router.put("/ngo/:donationId", authenticateJWT,confirmPickupByNgo);
 
 // Resort confirms pickup
-router.put("/resort/:donationId", confirmPickupByResort);
+router.put("/resort/:donationId",authenticateJWT, confirmPickupByResort);
 
 // Mark donation as picked (after both confirmations)
-router.put("/mark/:donationId", markAsPicked);
+router.put("/mark/:donationId",authenticateJWT, markAsPicked);
 
 module.exports = router;

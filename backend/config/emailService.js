@@ -1,11 +1,11 @@
 const nodemailer = require("nodemailer");
 
-// Create a transporter with your email service credentials
+// Creating a transporter with your email service credentials
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: "surplussmile@gmail.com", // Your email address
-    pass: "tvna crtu chwk srfx", // App password (use App Password, not your actual password)
+    pass: "tvna crtu chwk srfx", 
   },
 });
 

@@ -1,4 +1,6 @@
 const express = require("express");
+const authenticateJWT = require("../middlewares/authMiddleware");
+
 const {
   registerResort,
   loginResort,
@@ -19,9 +21,9 @@ router.post("/register", registerResort);
 router.post("/login", loginResort);
 
 //  Food Donation Routes
-router.post("/donate", createFoodDonation); // Resort food donation route
-router.get("/donations/:resortId", getAllFoodDonationsByResort); // Get all donations by one resort
-router.get("/donation/:donationId", getSingleDonation); // View single donation
-router.patch("/donation/:donationId/status", updateDonationStatus); // Admin/NGO updates donation status (Pending/Accepted/Rejected)
-router.get("/donations/:resortId/track",getResortDonationTracking );
+router.post("/donate", authenticateJWT,createFoodDonation); // Resort food donation route
+router.get("/donations/:resortId",authenticateJWT, getAllFoodDonationsByResort); // Get all donations by one resort
+router.get("/donation/:donationId",authenticateJWT, getSingleDonation); // View single donation
+router.patch("/donation/:donationId/status",authenticateJWT, updateDonationStatus); // Admin/NGO updates donation status (Pending/Accepted/Rejected)
+router.get("/donations/:resortId/track",authenticateJWT,getResortDonationTracking );
 module.exports = router;

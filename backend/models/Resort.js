@@ -11,7 +11,7 @@ const resortSchema = new mongoose.Schema({
     match: [/^[6-9]\d{9}$/, "Please enter a valid Indian phone number"],
   },
   isVerified: { type: Boolean, default: false },
-  // emailVerified: { type: Boolean, default: false }, // ✅ Added
+  // emailVerified: { type: Boolean, default: false }, 
   location: {
     type: {
       type: String,
@@ -23,7 +23,7 @@ const resortSchema = new mongoose.Schema({
       type: [Number], // [longitude, latitude]
       required: false,
     },
-  }, // ✅ Updated to GeoJSON format
+  },
   loginId: { type: String },
   password: { type: String },
   adminApprovalStatus: {

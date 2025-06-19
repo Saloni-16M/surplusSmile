@@ -59,8 +59,8 @@ const createFoodDonation = async (req, res) => {
 const getAllFoodDonationsByResort = async (req, res) => {
   try {
     const { resortId } = req.params;
-     // Check if resortId is valid
-     if (!mongoose.Types.ObjectId.isValid(resortId)) {
+    // Check if resortId is valid
+    if (!mongoose.Types.ObjectId.isValid(resortId)) {
       return res.status(400).json({ message: "Invalid resort ID format" });
     }
 
@@ -110,11 +110,9 @@ const updateDonationStatus = async (req, res) => {
 
     // Ensure assignedNGO is passed when status is Accepted
     if (status === "Accepted" && !assignedNGO) {
-      return res
-        .status(400)
-        .json({
-          message: "Assigned NGO is required when accepting a donation",
-        });
+      return res.status(400).json({
+        message: "Assigned NGO is required when accepting a donation",
+      });
     }
 
     // Prepare update object
@@ -127,8 +125,8 @@ const updateDonationStatus = async (req, res) => {
       updateFields.acceptedDate = new Date();
     }
 
-    const updatedDonation = await FoodDonation.findByIdAndUpdate(
-      donationId,
+    const updatedDonation = await FoodDonation.findOneAndUpdate(
+      { _id: donationId, status: "Pending" },
       updateFields,
       { new: true }
     )
@@ -136,10 +134,11 @@ const updateDonationStatus = async (req, res) => {
       .populate("assignedNGO", "name email location phone_no");
 
     if (!updatedDonation) {
-      return res.status(404).json({ message: "Donation not found" });
+      return res
+        .status(400)
+        .json({ message: "Donation not available or already accepted" });
     }
 
-    // ✅ Safe access with fallback values
     if (status === "Accepted" && updatedDonation.resortId?.email) {
       const email = updatedDonation.resortId.email;
       const subject = "NGO Accepted Your Donation Request";
@@ -185,7 +184,6 @@ const getAllPendingDonationsForNGO = async (req, res) => {
   }
 };
 
-
 const getResortDonationTracking = async (req, res) => {
   try {
     const { resortId } = req.params;
@@ -196,7 +194,9 @@ const getResortDonationTracking = async (req, res) => {
 
     const donations = await FoodDonation.find({ resortId })
       .sort({ createdAt: -1 })
-      .select("foodName quantity type foodMadeDate status pickupStatus pickupDate assignedNGO imageUrl createdAt")
+      .select(
+        "foodName quantity type foodMadeDate status pickupStatus pickupDate assignedNGO imageUrl createdAt"
+      )
       .populate("assignedNGO", "name email phoneNumber") // only selected fields from NGO
       .exec();
 

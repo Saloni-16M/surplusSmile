@@ -4,10 +4,8 @@ const Resort = require("../models/Resort");
 const sendApprovalEmail = require("../utils/ngoApprovalMail");
 const sendApprovalEmailResort=require('../config/emailService');
 const jwt = require("jsonwebtoken");
-
-
-
 const Admin = require("../models/Admin");
+
 
 const loginAdmin = async (req, res) => {
   try {

@@ -2,7 +2,10 @@ const mongoose = require("mongoose");
 const ngoSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  phone_no: { type: String, required: true },
+  phone_no: { type: String,
+    required: true,
+    unique: true,
+    match: [/^[6-9]\d{9}$/, "Please enter a valid Indian phone number"],},
   isCertified: { type: Boolean, default: false },
   address: { type: String, required: true },
   password: { type: String, required: false },
@@ -26,5 +29,5 @@ const ngoSchema = new mongoose.Schema({
 }, {
   timestamps: true,
 });
-// ✅ Correct
+
 module.exports = mongoose.model('Ngo', ngoSchema);

@@ -17,8 +17,9 @@ const AdminLogin = () => {
     logoutAll(); // Clear any previous tokens
     const sanitizedEmail = formData.email.trim().toLowerCase();
     const sanitizedPassword = formData.password.trim();
+    const API = import.meta.env.VITE_API_URL;
     try {
-      const response = await fetch("http://localhost:5000/api/admin/login", {
+      const response = await fetch(`${API}/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: sanitizedEmail, password: sanitizedPassword }),

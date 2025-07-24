@@ -11,6 +11,7 @@ const ResortResetPassword = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const API = import.meta.env.VITE_API_URL;
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -24,7 +25,7 @@ const ResortResetPassword = () => {
     }
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/resort/reset-password", {
+      const res = await fetch(`${API}/resort/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, token, newPassword }),

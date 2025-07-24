@@ -16,13 +16,14 @@ const NGO = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const ngoName = localStorage.getItem("ngoName");
   const notificationRef = useRef(null);
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const token = localStorage.getItem("ngoToken");
 
     const fetchPendingDonations = async () => {
       try {
-        const pendingRes = await axios.get("http://localhost:5000/api/ngo/donations/pending", {
+        const pendingRes = await axios.get(`${API}/ngo/donations/pending`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const previouslyFetchedIds = resorts.map(d => d._id);
@@ -37,7 +38,7 @@ const NGO = () => {
 
     const fetchAcceptedDonations = async () => {
       try {
-        const acceptedRes = await axios.get("http://localhost:5000/api/ngo/donations/accepted", {
+        const acceptedRes = await axios.get(`${API}/ngo/donations/accepted`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAcceptedDonations(acceptedRes.data || []);
@@ -69,11 +70,11 @@ const NGO = () => {
     try {
       const token = localStorage.getItem("ngoToken");
       await axios.put(
-        `http://localhost:5000/api/pickup/ngo/${donationId}`,
+        `${API}/pickup/ngo/${donationId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      const updatedAccepted = await axios.get("http://localhost:5000/api/ngo/donations/accepted", {
+      const updatedAccepted = await axios.get(`${API}/ngo/donations/accepted`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAcceptedDonations(prev =>
@@ -94,7 +95,7 @@ const NGO = () => {
       const donation = updatedAccepted.data.find((d) => d._id === donationId);
       if (donation?.pickupConfirmedByResort && donation?.pickupConfirmedByNGO) {
         await axios.put(
-          `http://localhost:5000/api/pickup/mark-picked/${donationId}`,
+          `${API}/pickup/mark-picked/${donationId}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -108,7 +109,7 @@ const NGO = () => {
     const token = localStorage.getItem("ngoToken");
     try {
       await axios.post(
-        "http://localhost:5000/api/ngo/logout",
+        `${API}/ngo/logout`,
         {},
         {
           headers: {

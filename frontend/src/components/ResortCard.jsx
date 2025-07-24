@@ -3,6 +3,7 @@ import axios from "axios";
 
 const ResortCard = ({ donationId, name, food, quantity, foodMadeDate, location, foodType }) => {
   const navigate = useNavigate();
+  const API = import.meta.env.VITE_API_URL;
 
   const handleRequestPickup = async () => {
     try {
@@ -10,7 +11,7 @@ const ResortCard = ({ donationId, name, food, quantity, foodMadeDate, location, 
       const ngoId = localStorage.getItem("ngoId");
 
       const response = await axios.patch(
-        `http://localhost:5000/api/ngo/donation/${donationId}/status`,
+        `${API}/ngo/donation/${donationId}/status`,
         {
           status: "Accepted",
           assignedNGO: ngoId,
@@ -39,7 +40,7 @@ const ResortCard = ({ donationId, name, food, quantity, foodMadeDate, location, 
       const token = localStorage.getItem("ngoToken");
 
       const response = await axios.put(
-        `http://localhost:5000/api/pickup/confirm-ngo/${donationId}`,
+        `${API}/pickup/confirm-ngo/${donationId}`,
         {},
         {
           headers: {

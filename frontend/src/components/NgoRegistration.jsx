@@ -30,9 +30,11 @@ const NgoRegistration = () => {
     }));
   };
 
+  const API = import.meta.env.VITE_API_URL;
+
   const getAddressFromCoordinates = async (lat, lon) => {
     try {
-      const res = await fetch("http://localhost:5000/api/location/reverse-geocode", {
+      const res = await fetch(`${API}/location/reverse-geocode`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ lat, lon }),
@@ -123,7 +125,7 @@ const NgoRegistration = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/ngo/send-otp", {
+      const response = await fetch(`${API}/ngo/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email }),
@@ -141,7 +143,7 @@ const NgoRegistration = () => {
 
   const verifyEmailOtp = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/ngo/verify-otp", {
+      const response = await fetch(`${API}/ngo/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email, otp }),
@@ -196,7 +198,7 @@ const NgoRegistration = () => {
     delete submissionData.pincode;
 
     try {
-      const response = await fetch("http://localhost:5000/api/ngo/register", {
+      const response = await fetch(`${API}/ngo/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submissionData),

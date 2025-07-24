@@ -18,6 +18,7 @@ const Resort = () => {
   const [showNotificationBox, setShowNotificationBox] = useState(false);
   const notificationRef = useRef(null);
   const navigate = useNavigate();
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetchDonations();
@@ -36,7 +37,7 @@ const Resort = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/resort/donations/${resortId}/track`,
+        `${API}/resort/donations/${resortId}/track`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const donations = response.data || [];
@@ -57,7 +58,7 @@ const Resort = () => {
     try {
       setActionMessage("");
       await axios.put(
-        `http://localhost:5000/api/pickup/resort/${donationId}`,
+        `${API}/pickup/resort/${donationId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -74,7 +75,7 @@ const Resort = () => {
     const token = localStorage.getItem("resortToken");
     try {
       await axios.post(
-        "http://localhost:5000/api/resort/logout",
+        `${API}/resort/logout`,
         {},
         {
           headers: {

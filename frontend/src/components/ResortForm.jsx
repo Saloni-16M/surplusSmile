@@ -12,6 +12,7 @@ const ResortForm = () => {
     imageUrl: "" // optional
   });
   const token = localStorage.getItem("resortToken");
+  const API = import.meta.env.VITE_API_URL;
 
   // Set resortId from localStorage on mount
   useEffect(() => {
@@ -41,7 +42,7 @@ const ResortForm = () => {
         additionalInfo: sanitize(formData.additionalInfo),
         imageUrl: sanitize(formData.imageUrl),
       };
-      const res = await fetch("http://localhost:5000/api/resort/donate", {
+      const res = await fetch(`${API}/resort/donate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

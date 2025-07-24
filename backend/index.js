@@ -30,7 +30,7 @@ app.use(helmet()); // Security headers
 
 // CORS origins from environment variable
 const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [
-  'http://localhost:5174', // Frontend dev
+  'http://localhost:5173', // Frontend dev
   // Add your production frontend URL here
 ];
 app.use(cors({

@@ -52,7 +52,8 @@ const ResortRegistration = () => {
 
   const getAddressFromCoordinates = async (lat, lon) => {
     try {
-      const res = await fetch("http://localhost:5000/api/location/reverse-geocode", {
+      const API = import.meta.env.VITE_API_URL;
+      const res = await fetch(`${API}/location/reverse-geocode`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ lat, lon }),
@@ -101,7 +102,8 @@ const fullAddress = `${formData.addressLine1}, ${formData.city}, ${formData.stat
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/resort/register", {
+      const API = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API}/resort/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submissionData),

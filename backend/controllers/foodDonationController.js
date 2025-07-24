@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const FoodDonation = require("../models/FoodDonation");
 
 const Resort = require("../models/Resort");
+const logger = require('../utils/logger');
 
 // POST /donate
 const createFoodDonation = async (req, res) => {
@@ -34,8 +35,9 @@ const createFoodDonation = async (req, res) => {
         .json({ message: "Resort not found or not approved" });
     }
 
+    // Always store resortId as ObjectId
     const donation = new FoodDonation({
-      resortId,
+      resortId: new mongoose.Types.ObjectId(resortId),
       foodName,
       quantity,
       type,
@@ -46,6 +48,15 @@ const createFoodDonation = async (req, res) => {
     });
 
     await donation.save();
+    logger.info({
+      event: 'placed_donation',
+      userType: 'Resort',
+      userId: donation.resortId,
+      donationId: donation._id,
+      foodName: donation.foodName,
+      time: new Date().toISOString(),
+      ip: req.ip
+    });
     res
       .status(201)
       .json({ message: "Food donation submitted successfully", donation });
@@ -200,11 +211,8 @@ const getResortDonationTracking = async (req, res) => {
       .populate("assignedNGO", "name email phoneNumber") // only selected fields from NGO
       .exec();
 
-    if (!donations || donations.length === 0) {
-      return res.status(404).json({ message: "No donations found." });
-    }
-
-    res.status(200).json(donations);
+    // Always return 200 with an array (empty if none found)
+    return res.status(200).json(donations);
   } catch (error) {
     console.error("Error tracking donations:", error);
     res.status(500).json({ message: "Server error while tracking donations" });

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const ResortCard = ({ donationId, name, food, quantity, expiry, location, foodType }) => {
+const ResortCard = ({ donationId, name, food, quantity, foodMadeDate, location, foodType }) => {
   const navigate = useNavigate();
 
   const handleRequestPickup = async () => {
@@ -26,7 +26,7 @@ const ResortCard = ({ donationId, name, food, quantity, expiry, location, foodTy
       alert("Pickup requested! Resort has been notified.");
 
       navigate("/active-requests", {
-        state: { name, food, quantity, expiry, location, foodType },
+        state: { name, food, quantity, foodMadeDate, location, foodType },
       });
     } catch (error) {
       console.error("Error requesting pickup:", error);
@@ -65,8 +65,8 @@ const ResortCard = ({ donationId, name, food, quantity, expiry, location, foodTy
       <p>{food}</p>
       <p className="font-semibold mt-2">Quantity</p>
       <p>{quantity}</p>
-      <p className="font-semibold mt-2">Expiry Time</p>
-      <p>{expiry}</p>
+      <p className="font-semibold mt-2">Food Made Date</p>
+      <p>{foodMadeDate || '-'}</p>
       <p className="font-semibold mt-2">Location</p>
       <p>{location}</p>
       <p className="mt-2 text-sm font-semibold">Food Type - {foodType}</p>

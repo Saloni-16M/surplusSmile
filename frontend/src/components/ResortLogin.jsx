@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { logoutAll } from '../utils/auth';
 
 const ResortLogin = () => {
   const [formData, setFormData] = useState({
@@ -14,28 +15,26 @@ const ResortLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    logoutAll(); // Clear any previous tokens
+    const sanitizedEmail = formData.email.trim().toLowerCase();
+    const sanitizedPassword = formData.password.trim();
     try {
       const response = await fetch("http://localhost:5000/api/resort/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ email: sanitizedEmail, password: sanitizedPassword }),
       });
-
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
-
-      // ✅ Save token and resortId
       localStorage.setItem("resortToken", data.token);
+      localStorage.setItem("resortName", data.resort.name);
       localStorage.setItem("resortId", data.resort._id);
-       // <-- Store resortId for later use
-          localStorage.setItem('resortName', data.resort.name);
-
       setMessage("Login successful! Redirecting...");
-
       setTimeout(() => {
-        window.location.href = "/resort"; // Redirect to Resort Dashboard
+        window.location.href = "/resort";
       }, 1500);
     } catch (error) {
+      logoutAll();
       setMessage(error.message);
     }
   };
@@ -97,6 +96,11 @@ const ResortLogin = () => {
         className="text-teal-600 hover:text-teal-800 font-semibold underline"
       >
         Register here
+      </a>
+    </p>
+    <p className="text-center mt-2 text-sm text-gray-600">
+      <a href="/resort/forgot-password" className="text-teal-600 hover:text-teal-800 font-semibold underline">
+        Forgot Password?
       </a>
     </p>
   </div>

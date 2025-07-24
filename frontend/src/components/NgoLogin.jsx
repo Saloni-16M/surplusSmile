@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { logoutAll } from '../utils/auth';
 
 const NgoLogin = () => {
   const [formData, setFormData] = useState({
@@ -14,25 +15,26 @@ const NgoLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    logoutAll(); // Clear any previous tokens
+    const sanitizedEmail = formData.email.trim().toLowerCase();
+    const sanitizedPassword = formData.password.trim();
     try {
       const response = await fetch("http://localhost:5000/api/ngo/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ email: sanitizedEmail, password: sanitizedPassword }),
       });
-
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
-
       localStorage.setItem("ngoToken", data.token);
-      localStorage.setItem("ngoId", data.ngo._id); // ✅ Correct
       localStorage.setItem("ngoName", data.ngo.name);
-
+      localStorage.setItem("ngoId", data.ngo._id);
       setMessage("Login successful! Redirecting...");
       setTimeout(() => {
-        window.location.href = "/ngo"; // Redirect to NGO dashboard
+        window.location.href = "/ngo";
       }, 1500);
     } catch (error) {
+      logoutAll();
       setMessage(error.message);
     }
   };
@@ -91,6 +93,11 @@ const NgoLogin = () => {
       Not registered?{" "}
       <a href="/ngo/register" className="text-blue-600 hover:text-blue-800 font-semibold underline">
         Register here
+      </a>
+    </p>
+    <p className="text-center mt-2 text-sm text-gray-600">
+      <a href="/ngo/forgot-password" className="text-blue-600 hover:text-blue-800 font-semibold underline">
+        Forgot Password?
       </a>
     </p>
   </div>

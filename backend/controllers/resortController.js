@@ -3,6 +3,9 @@ const bcrypt = require("bcryptjs");
 const sendEmailToAdmin = require("../utils/notifyEmail");
 const jwt = require("jsonwebtoken");
 const Otp = require("../models/Otp"); // Import OTP model
+const crypto = require('crypto');
+const sendResortEmail = require('../utils/sendResortEmail');
+const logger = require('../utils/logger');
 
 // Resort Registration
 const registerResort = async (req, res) => {
@@ -59,7 +62,7 @@ const registerResort = async (req, res) => {
     // await Otp.deleteMany({ email });
 
     // Send email to admin
-    const adminEmail = "saloni45055@gmail.com";
+    const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
     const subject = "New Resort Registration Pending Approval";
     const message = `Dear Admin,
 
@@ -116,6 +119,15 @@ const loginResort = async (req, res) => {
       }
     );
 
+    logger.info({
+      event: 'login',
+      userType: 'Resort',
+      userId: resort._id,
+      name: resort.name,
+      time: new Date().toISOString(),
+      ip: req.ip
+    });
+
     res.status(200).json({
       message: "Login successful",
       token,
@@ -134,4 +146,34 @@ const loginResort = async (req, res) => {
   }
 };
 
-module.exports = { loginResort, registerResort };
+// Resort Password Reset: Request
+const requestPasswordReset = async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: 'Email is required.' });
+  const resort = await Resort.findOne({ email });
+  if (!resort) return res.status(404).json({ message: 'No Resort found with that email.' });
+  const token = crypto.randomBytes(32).toString('hex');
+  resort.resetPasswordToken = token;
+  resort.resetPasswordExpires = Date.now() + 1000 * 60 * 30; // 30 min
+  await resort.save();
+  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/resort/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
+  await sendResortEmail(email, 'Resort Password Reset', `Reset your password: ${resetUrl}`);
+  res.json({ message: 'Password reset link sent to your email.' });
+};
+
+// Resort Password Reset: Reset
+const resetPassword = async (req, res) => {
+  const { email, token, newPassword } = req.body;
+  if (!email || !token || !newPassword) return res.status(400).json({ message: 'All fields required.' });
+  const resort = await Resort.findOne({ email, resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
+  if (!resort) return res.status(400).json({ message: 'Invalid or expired token.' });
+  resort.password = await bcrypt.hash(newPassword, 10);
+  resort.resetPasswordToken = undefined;
+  resort.resetPasswordExpires = undefined;
+  await resort.save();
+  res.json({ message: 'Password has been reset successfully.' });
+};
+
+module.exports = { loginResort, registerResort, requestPasswordReset, resetPassword };
+
+// TODO: Add more robust input validation and sanitization for all endpoints

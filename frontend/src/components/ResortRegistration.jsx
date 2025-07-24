@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ResortRegistration = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -120,8 +122,17 @@ const fullAddress = `${formData.addressLine1}, ${formData.city}, ${formData.stat
         state: "",
         pincode: "",
       });
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
     } catch (error) {
-      setMessage(error.message);
+      let msg = error.message;
+      if (msg.includes('CORS policy')) {
+        msg = 'Access denied: Your browser is not allowed to connect to the server. Please contact support.';
+      } else if (msg.includes('E11000 duplicate key error') && msg.includes('phone_no')) {
+        msg = 'This phone number is already registered. Please use a different phone number or log in.';
+      }
+      setMessage(msg);
     } finally {
       setLoading(false);
     }

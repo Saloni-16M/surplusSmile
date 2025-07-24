@@ -5,9 +5,19 @@ const sendApprovalEmail = require("../utils/ngoApprovalMail");
 const sendApprovalEmailResort=require('../config/emailService');
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/Admin");
+const { body, validationResult } = require('express-validator');
 
+
+const loginAdminValidators = [
+  body('email').isEmail().withMessage('Valid email required'),
+  body('password').notEmpty().withMessage('Password required'),
+];
 
 const loginAdmin = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ success: false, errors: errors.array() });
+  }
   try {
     const { email, password } = req.body;
 
@@ -91,7 +101,6 @@ const approveNgo = async (req, res) => {
     if (isApproved) {
       const loginId = existingNgo.email;
       const password = Math.random().toString(36).slice(-8);
-      console.log(password);
       const hashedPassword = await bcrypt.hash(password, 10);
 
       existingNgo.loginId = loginId;
@@ -138,7 +147,6 @@ const approveResort = async (req, res) => {
     if (isApproved) {
       const loginId = existingResort.email;
       const password = Math.random().toString(36).slice(-8);
-      console.log(password);
       const hashedPassword = await bcrypt.hash(password, 10);
 
       existingResort.loginId = loginId;
@@ -169,7 +177,7 @@ const updateNgo = async (req, res) => {
     const { ngoId } = req.params;
     const { adminComments } = req.body;
 
-    if (!ngoId || !adminComments) {
+    if (!ngoId || adminComments === undefined) {
       return res.status(400).json({ success: false, message: "Invalid request" });
     }
 
@@ -198,7 +206,7 @@ const updateResort = async (req, res) => {
     const { resortId } = req.params;
     const { adminComments } = req.body;
 
-    if (!resortId || !adminComments) {
+    if (!resortId || adminComments === undefined) {
       return res.status(400).json({ success: false, message: "Invalid request" });
     }
 
@@ -227,4 +235,5 @@ module.exports = {
   updateNgo,
   updateResort,
   loginAdmin,
+  loginAdminValidators,
 };

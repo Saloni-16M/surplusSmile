@@ -7,8 +7,10 @@ import {
   approveResort,
   updateNgo,
   updateResort,
+  handleAuthError,
 } from "../services/apiService";
 import "./AdminDashboard.css";
+import { logoutAll } from '../utils/auth';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -38,6 +40,7 @@ const AdminDashboard = () => {
         resortsData.forEach((resort) => (initialComments[resort._id] = resort.adminComments || ""));
         setComments(initialComments);
       } catch (err) {
+        handleAuthError(err, 'admin');
         setError("Failed to load data. Please try again.");
       } finally {
         setLoading(false);
@@ -80,7 +83,7 @@ const AdminDashboard = () => {
       if (type === "ngo") {
         await updateNgo(id, { adminComments: comments[id] });
       } else {
-        await updateResort(id, { adminComments: comments[id] });
+        await updateResort(id, comments[id]);
       }
 
       const updatedNgos = await fetchNgos();
@@ -104,7 +107,7 @@ const AdminDashboard = () => {
           <th>Name</th>
           <th>Email</th>
           <th>Address</th>
-          {/* <th>Admin Comments</th> */}
+          <th>Admin Comments</th>
           <th>Approval</th>
           <th>Actions</th>
         </tr>
@@ -120,17 +123,17 @@ const AdminDashboard = () => {
               <td>{item.name}</td>
               <td>{item.email}</td>
               <td>{address}</td>
-              {/* <td>
-                {item.adminComments ? item.adminComments : (
-                  <input
-                    type="text"
-                    value={comments[item._id]}
-                    onChange={(e) =>
-                      setComments((prev) => ({ ...prev, [item._id]: e.target.value }))
-                    }
-                  />
-                )}
-              </td> */}
+              <td>
+                <textarea
+                  value={comments[item._id] || ""}
+                  onChange={(e) =>
+                    setComments((prev) => ({ ...prev, [item._id]: e.target.value }))
+                  }
+                  rows={2}
+                  style={{ width: '100%' }}
+                  placeholder="Add admin comment..."
+                />
+              </td>
               <td>{item.adminApprovalStatus}</td>
               <td>
                 {item.adminApprovalStatus !== "Approved" && (
@@ -138,9 +141,9 @@ const AdminDashboard = () => {
                     Approve
                   </button>
                 )}
-                {!item.adminComments && (
-                  <button onClick={() => handleSave(item._id, type)}>Save</button>
-                )}
+                <button onClick={() => handleSave(item._id, type)} style={{ marginLeft: 8 }}>
+                  Save
+                </button>
               </td>
             </tr>
           );
@@ -151,6 +154,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
+      <button onClick={() => { logoutAll(); navigate('/admin/login'); }} className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded">Logout</button>
       <h2>Registered NGOs</h2>
       {ngos.length > 0 ? renderTable(ngos, "ngo") : <p>No NGOs registered.</p>}
 

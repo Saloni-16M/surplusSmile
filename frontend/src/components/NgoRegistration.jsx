@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const NgoRegistration = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -156,74 +158,81 @@ const NgoRegistration = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!isOtpVerified) {
-    setMessage("Please verify your Email OTP before submitting.");
-    return;
-  }
+    if (!isOtpVerified) {
+      setMessage("Please verify your Email OTP before submitting.");
+      return;
+    }
 
-  if (!formData.addressLine1 || !formData.city || !formData.state || formData.pincode.length !== 6) {
-    setMessage("Please fill in complete address details.");
-    return;
-  }
+    if (!formData.addressLine1 || !formData.city || !formData.state || formData.pincode.length !== 6) {
+      setMessage("Please fill in complete address details.");
+      return;
+    }
 
-  const fullAddress = `${formData.addressLine1}, ${formData.addressLine2}, ${formData.city}, ${formData.state} - ${formData.pincode}`;
+    const fullAddress = `${formData.addressLine1}, ${formData.addressLine2}, ${formData.city}, ${formData.state} - ${formData.pincode}`;
 
-  const lon = parseFloat(formData.longitude);
-  const lat = parseFloat(formData.latitude);
+    const lon = parseFloat(formData.longitude);
+    const lat = parseFloat(formData.latitude);
 
-  const submissionData = {
-    ...formData,
-    address: fullAddress,
-  };
-
-  // Only add location if coordinates are valid
-  if (!isNaN(lon) && !isNaN(lat)) {
-    submissionData.location = {
-      type: "Point",
-      coordinates: [lon, lat],
+    const submissionData = {
+      ...formData,
+      address: fullAddress,
     };
-  }
 
-  // Remove the original address fields
-  delete submissionData.addressLine1;
-  delete submissionData.addressLine2;
-  delete submissionData.city;
-  delete submissionData.state;
-  delete submissionData.pincode;
+    // Only add location if coordinates are valid
+    if (!isNaN(lon) && !isNaN(lat)) {
+      submissionData.location = {
+        type: "Point",
+        coordinates: [lon, lat],
+      };
+    }
 
-  try {
-    const response = await fetch("http://localhost:5000/api/ngo/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(submissionData),
-    });
+    // Remove the original address fields
+    delete submissionData.addressLine1;
+    delete submissionData.addressLine2;
+    delete submissionData.city;
+    delete submissionData.state;
+    delete submissionData.pincode;
 
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message);
-
-    setMessage("NGO registered successfully!");
-    setFormData({
-      name: "",
-      email: "",
-      phone_no: "",
-      isCertified: false,
-      latitude: null,
-      longitude: null,
-      addressLine1: "",
-      addressLine2: "",
-      city: "",
-      state: "",
-      pincode: "",
-    });
-    setOtp("");
-    setIsOtpSent(false);
-    setIsOtpVerified(false);
-  } catch (error) {
-    setMessage(error.message);
-  }
-};
+    try {
+      const response = await fetch("http://localhost:5000/api/ngo/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submissionData),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
+      setMessage("NGO registered successfully!");
+      setFormData({
+        name: "",
+        email: "",
+        phone_no: "",
+        isCertified: false,
+        latitude: null,
+        longitude: null,
+        addressLine1: "",
+        addressLine2: "",
+        city: "",
+        state: "",
+        pincode: "",
+      });
+      setOtp("");
+      setIsOtpSent(false);
+      setIsOtpVerified(false);
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
+    } catch (error) {
+      let msg = error.message;
+      if (msg.includes('CORS policy')) {
+        msg = 'Access denied: Your browser is not allowed to connect to the server. Please contact support.';
+      } else if (msg.includes('E11000 duplicate key error') && msg.includes('phone_no')) {
+        msg = 'This phone number is already registered. Please use a different phone number or log in.';
+      }
+      setMessage(msg);
+    }
+  };
 
   return (
     /* Updated styles inside JSX */

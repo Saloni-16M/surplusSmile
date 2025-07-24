@@ -11,15 +11,17 @@ const ResortForm = () => {
     additionalInfo: "",
     imageUrl: "" // optional
   });
- const token = localStorage.getItem("resortToken");
-  // Example: Assume resortId is stored in localStorage after login
+  const token = localStorage.getItem("resortToken");
+
+  // Set resortId from localStorage on mount
   useEffect(() => {
     const storedResortId = localStorage.getItem("resortId");
-     
     if (storedResortId) {
       setFormData((prev) => ({ ...prev, resortId: storedResortId }));
     }
   }, []);
+
+  const sanitize = (str) => (typeof str === 'string' ? str.trim() : str);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,6 +31,16 @@ const ResortForm = () => {
     e.preventDefault();
 
     try {
+      const sanitizedData = {
+        ...formData,
+        foodName: sanitize(formData.foodName),
+        quantity: sanitize(formData.quantity),
+        foodMadeDate: sanitize(formData.foodMadeDate),
+        type: sanitize(formData.type),
+        pickupAddress: sanitize(formData.pickupAddress),
+        additionalInfo: sanitize(formData.additionalInfo),
+        imageUrl: sanitize(formData.imageUrl),
+      };
       const res = await fetch("http://localhost:5000/api/resort/donate", {
         method: "POST",
         headers: {
@@ -37,7 +49,7 @@ const ResortForm = () => {
           Authorization: `Bearer ${token}`
 
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(sanitizedData)
       });
 
       const data = await res.json();

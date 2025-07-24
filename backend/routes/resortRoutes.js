@@ -1,9 +1,12 @@
 const express = require("express");
 const authenticateJWT = require("../middlewares/authMiddleware");
+const logger = require('../utils/logger');
 
 const {
   registerResort,
   loginResort,
+  requestPasswordReset,
+  resetPassword
 } = require("../controllers/resortController");
 
 const {
@@ -19,6 +22,21 @@ const router = express.Router();
 //  Resort Auth Routes
 router.post("/register", registerResort);
 router.post("/login", loginResort);
+router.post("/request-password-reset", requestPasswordReset);
+router.post("/reset-password", resetPassword);
+router.post('/logout', authenticateJWT, (req, res) => {
+  logger.info({
+    event: 'logout',
+    userType: 'Resort',
+    userId: req.user.id,
+    time: new Date().toISOString(),
+    ip: req.ip
+  });
+  res.json({ message: 'Logout successful' });
+});
+
+// TODO: Add rate limiting to login and register endpoints
+// TODO: Add input validation for all endpoints
 
 //  Food Donation Routes
 router.post("/donate", authenticateJWT,createFoodDonation); // Resort food donation route

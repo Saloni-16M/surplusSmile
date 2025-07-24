@@ -32,6 +32,8 @@ const resortSchema = new mongoose.Schema({
     default: "Pending",
   },
   adminComments: { type: String, default: "" },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
 }, { timestamps: true });
 
 // Add 2dsphere index for geospatial queries

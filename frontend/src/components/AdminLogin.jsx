@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { logoutAll } from '../utils/auth';
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -13,21 +14,21 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
-
+    logoutAll(); // Clear any previous tokens
+    const sanitizedEmail = formData.email.trim().toLowerCase();
+    const sanitizedPassword = formData.password.trim();
     try {
       const response = await fetch("http://localhost:5000/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ email: sanitizedEmail, password: sanitizedPassword }),
       });
-
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
-
       localStorage.setItem("adminToken", data.token);
       navigate("/admin"); // Redirect to dashboard
-
     } catch (error) {
+      logoutAll();
       setMessage(error.message);
     }
   };

@@ -1,13 +1,16 @@
 const Ngo = require("../models/Ngo");
 const mongoose = require("mongoose");
 
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sendEmailToAdmin = require("../utils/notifyEmail");
 const Otp = require("../models/Otp");
 // const { getSessionId, sendSmsOtp } = require("../utils/sendSmsOtp");
 // const { verifySmsOtp } = require("../utils/verifySmsOtp");
 const FoodDonation = require("../models/FoodDonation");
+const crypto = require('crypto');
+const sendNgoEmail = require('../utils/sendNgoEmail');
+const logger = require('../utils/logger');
 
 // ✅ Register NGO
 const registerNgo = async (req, res) => {
@@ -76,7 +79,7 @@ const registerNgo = async (req, res) => {
     await newNgo.save();
 
     // Step 7: Notify Admin
-    const adminEmail = "saloni45055@gmail.com";
+    const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
     const subject = "New NGO Registration Pending Approval";
     const message = `Dear Admin,
 
@@ -129,6 +132,15 @@ const loginNgo = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
+
+    logger.info({
+      event: 'login',
+      userType: 'NGO',
+      userId: ngo._id,
+      name: ngo.name,
+      time: new Date().toISOString(),
+      ip: req.ip
+    });
 
     res.status(200).json({
       message: "Login successful",
@@ -223,6 +235,36 @@ const getAcceptedDonationsByNgo = async (req, res) => {
   }
 };
 
+// NGO Password Reset: Request
+const requestPasswordReset = async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: 'Email is required.' });
+  const ngo = await Ngo.findOne({ email });
+  if (!ngo) return res.status(404).json({ message: 'No NGO found with that email.' });
+  const token = crypto.randomBytes(32).toString('hex');
+  ngo.resetPasswordToken = token;
+  ngo.resetPasswordExpires = Date.now() + 1000 * 60 * 30; // 30 min
+  await ngo.save();
+  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/ngo/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
+  await sendNgoEmail(email, 'NGO Password Reset', `Reset your password: ${resetUrl}`);
+  res.json({ message: 'Password reset link sent to your email.' });
+};
+
+// NGO Password Reset: Reset
+const resetPassword = async (req, res) => {
+  const { email, token, newPassword } = req.body;
+  if (!email || !token || !newPassword) return res.status(400).json({ message: 'All fields required.' });
+  const ngo = await Ngo.findOne({ email, resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
+  if (!ngo) return res.status(400).json({ message: 'Invalid or expired token.' });
+  ngo.password = await bcrypt.hash(newPassword, 10);
+  ngo.resetPasswordToken = undefined;
+  ngo.resetPasswordExpires = undefined;
+  await ngo.save();
+  res.json({ message: 'Password has been reset successfully.' });
+};
+
+// TODO: Add more robust input validation and sanitization for all endpoints
+
 // ✅ Export all controllers
 module.exports = {
   registerNgo,
@@ -230,4 +272,6 @@ module.exports = {
   // sendPhoneOtp,
   // verifyPhoneOtp,
   getAcceptedDonationsByNgo,
+  requestPasswordReset,
+  resetPassword,
 };

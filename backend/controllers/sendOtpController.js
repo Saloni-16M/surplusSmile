@@ -1,5 +1,6 @@
 const Otp = require("../models/Otp");
 const { sendOtpToEmail } = require("../utils/sendOtp");
+const rateLimit = require('express-rate-limit');
 
 const sendOtpController = async (req, res) => {
   const { email } = req.body;
@@ -34,4 +35,13 @@ const sendOtpController = async (req, res) => {
   }
 };
 
-module.exports = { sendOtpController };
+// Add rate limiter for OTP requests
+const otpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 OTP requests per windowMs
+  message: { message: 'Too many OTP requests. Please try again later.' },
+});
+
+// TODO: Add input validation for email field
+
+module.exports = { sendOtpController, otpLimiter };

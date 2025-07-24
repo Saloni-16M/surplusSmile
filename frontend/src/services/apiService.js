@@ -1,5 +1,6 @@
 // src/services/apiService.js
 import axios from "axios";
+import { logoutAll, getToken, isTokenValid, decodeToken } from '../utils/auth';
 
 const API_BASE_URL = "http://localhost:5000/api";
 
@@ -135,7 +136,17 @@ export const approveResort = async (resortId, data) => {
 export const updateResort = async (resortId, adminComments) => {
   return await axios.put(
     `${API_BASE_URL}/admin/resorts/update/${resortId}`,
-    { adminComments: adminComments.adminComments },
+    { adminComments },
     getAuthConfig()
   );
 };
+
+export function handleAuthError(error, role) {
+  if (error?.response && (error.response.status === 401 || error.response.status === 403)) {
+    logoutAll();
+    if (role === 'admin') window.location.href = '/admin/login';
+    else if (role === 'ngo') window.location.href = '/ngo/login';
+    else if (role === 'resort') window.location.href = '/resort/login';
+    else window.location.href = '/';
+  }
+}
